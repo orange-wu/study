@@ -39,6 +39,6 @@ public class ElasticsearchConfigTest {
     public void testRRestHighLevelClient(){
         GetIndexRequest request = new GetIndexRequest("user");
         GetIndexResponse getIndexResponse = restHighLevelClient.indices().get(request, RequestOptions.DEFAULT);
-        log.info("getIndexResponse:{}",JSONUtil.toJsonStr(getIndexResponse));
+        log.info("getIndexResponse1:{}",JSONUtil.toJsonStr(getIndexResponse));
     }
 }
