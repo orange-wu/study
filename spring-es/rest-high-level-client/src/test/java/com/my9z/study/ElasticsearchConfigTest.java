@@ -2,7 +2,12 @@ package com.my9z.study;
 
 import cn.hutool.json.JSONUtil;
 import com.my9z.study.properties.ESConfigProperties;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.GetIndexRequest;
+import org.elasticsearch.client.indices.GetIndexResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +27,18 @@ public class ElasticsearchConfigTest {
     @Autowired
     private ESConfigProperties esConfigProperties;
 
+    @Autowired
+    private RestHighLevelClient restHighLevelClient;
+
     @Test
     public void testESConfigProperties() {
         log.info("esConfigProperties：{}", JSONUtil.toJsonStr(esConfigProperties));
+    }
+    @SneakyThrows
+    @Test
+    public void testRRestHighLevelClient(){
+        GetIndexRequest request = new GetIndexRequest("user");
+        GetIndexResponse getIndexResponse = restHighLevelClient.indices().get(request, RequestOptions.DEFAULT);
+        log.info("getIndexResponse:{}",JSONUtil.toJsonStr(getIndexResponse));
     }
 }

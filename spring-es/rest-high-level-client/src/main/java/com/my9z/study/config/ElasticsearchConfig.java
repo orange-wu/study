@@ -10,6 +10,7 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
@@ -27,6 +28,11 @@ public class ElasticsearchConfig {
     @Autowired
     private ESConfigProperties esConfigProperties;
 
+    @Bean
+    public RestHighLevelClient restHighLevelClient() {
+        return creatRestClient(esConfigProperties);
+    }
+
     private RestHighLevelClient creatRestClient(ESConfigProperties esConfigProperties) {
         if (Objects.isNull(esConfigProperties) || CollUtil.isEmpty(esConfigProperties.getNodes())) {
             throw new RuntimeException("ES 节点未配置");
@@ -39,11 +45,24 @@ public class ElasticsearchConfig {
                 .toArray(HttpHost[]::new);
         //构建连接builder对象
         RestClientBuilder builder = RestClient.builder(httpHosts);
+        //异步连接延时配置
+        builder.setRequestConfigCallback(requestConfigBuild -> {
+            requestConfigBuild.setConnectTimeout(esConfigProperties.getConnectTimeout());
+            requestConfigBuild.setSocketTimeout(esConfigProperties.getSocketTimeout());
+            requestConfigBuild.setConnectionRequestTimeout(esConfigProperties.getConnectionRequestTimeout());
+            return requestConfigBuild;
+        });
+        //异步连接数配置
+        builder.setHttpClientConfigCallback(httpClientBuild -> {
+            httpClientBuild.setMaxConnTotal(esConfigProperties.getMaxConnectTotal());
+            httpClientBuild.setMaxConnPerRoute(esConfigProperties.getMaxConnectPerRoute());
+            return httpClientBuild;
+        });
+        //todo 用户名密码验证
+        //构建RestHighLevelClient
         RestHighLevelClient restHighLevelClient = new RestHighLevelClient(builder);
         log.info("ES 客户端创建成功: {}", JSONUtil.toJsonStr(esConfigProperties.getNodes()));
-        // TODO: 2022/11/2 其他参数设置
         return restHighLevelClient;
-
     }
 
 }

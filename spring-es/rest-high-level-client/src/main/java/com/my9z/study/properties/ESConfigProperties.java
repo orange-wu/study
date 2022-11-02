@@ -21,27 +21,27 @@ public class ESConfigProperties {
     /**
      * 连接超时时间
      */
-    private Integer connectTimeout;
+    private Integer connectTimeout = 5000;
 
     /**
      * 连接处理超时时间
      */
-    private Integer socketTimeout;
+    private Integer socketTimeout = 40000;
 
     /**
      * 获取连接超时时间
      */
-    private Integer connectionRequestTimeout;
+    private Integer connectionRequestTimeout = 10000;
 
     /**
      * 最大路由连接数
      */
-    private Integer maxConnectPerRoute;
+    private Integer maxConnectPerRoute = 100;
 
     /**
      * 最大连接数
      */
-    private Integer maxConnectTotal;
+    private Integer maxConnectTotal = 100;
 
     /**
      * 用户名
