@@ -1,11 +1,15 @@
 package com.my9z.study.config;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.my9z.study.properties.ESConfigProperties;
 import com.my9z.study.properties.Nodes;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -33,6 +37,12 @@ public class ElasticsearchConfig {
         return creatRestClient(esConfigProperties);
     }
 
+    /**
+     * 根据es配置创建RestHighLevelClient
+     *
+     * @param esConfigProperties es配置
+     * @return RestHighLevelClient
+     */
     private RestHighLevelClient creatRestClient(ESConfigProperties esConfigProperties) {
         if (Objects.isNull(esConfigProperties) || CollUtil.isEmpty(esConfigProperties.getNodes())) {
             throw new RuntimeException("ES 节点未配置");
@@ -45,6 +55,15 @@ public class ElasticsearchConfig {
                 .toArray(HttpHost[]::new);
         //构建连接builder对象
         RestClientBuilder builder = RestClient.builder(httpHosts);
+        //认证配置
+        if (StrUtil.isNotBlank(esConfigProperties.getUsername())) {
+            BasicCredentialsProvider provider = new BasicCredentialsProvider();
+            provider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(esConfigProperties.getUsername(), esConfigProperties.getPassword()));
+            builder.setHttpClientConfigCallback(httpClientBuild -> {
+                httpClientBuild.setDefaultCredentialsProvider(provider);
+                return httpClientBuild;
+            });
+        }
         //异步连接延时配置
         builder.setRequestConfigCallback(requestConfigBuild -> {
             requestConfigBuild.setConnectTimeout(esConfigProperties.getConnectTimeout());
@@ -58,7 +77,6 @@ public class ElasticsearchConfig {
             httpClientBuild.setMaxConnPerRoute(esConfigProperties.getMaxConnectPerRoute());
             return httpClientBuild;
         });
-        //todo 用户名密码验证
         //构建RestHighLevelClient
         RestHighLevelClient restHighLevelClient = new RestHighLevelClient(builder);
         log.info("ES 客户端创建成功: {}", JSONUtil.toJsonStr(esConfigProperties.getNodes()));

@@ -34,11 +34,10 @@ public class ElasticsearchConfigTest {
     public void testESConfigProperties() {
         log.info("esConfigProperties：{}", JSONUtil.toJsonStr(esConfigProperties));
     }
+
     @SneakyThrows
     @Test
-    public void testRRestHighLevelClient(){
-        GetIndexRequest request = new GetIndexRequest("user");
-        GetIndexResponse getIndexResponse = restHighLevelClient.indices().get(request, RequestOptions.DEFAULT);
-        log.info("getIndexResponse1:{}",JSONUtil.toJsonStr(getIndexResponse));
+    public void testRestHighLevelClient(){
+        log.info("getIndexResponse1:{}",JSONUtil.toJsonStr(restHighLevelClient));
     }
 }
