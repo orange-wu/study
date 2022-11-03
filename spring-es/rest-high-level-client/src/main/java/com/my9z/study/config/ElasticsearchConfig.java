@@ -32,6 +32,9 @@ public class ElasticsearchConfig {
     @Autowired
     private ESConfigProperties esConfigProperties;
 
+    /**
+     * 装载RestHighLevelClient bean对象到spring容器中
+     */
     @Bean
     public RestHighLevelClient restHighLevelClient() {
         return creatRestClient(esConfigProperties);
