@@ -121,11 +121,27 @@ public class ElasticsearchDocTest {
         User ly = User.builder().name("ly").age(18).sex("boy").build();
         IndexRequest lyIndex = new IndexRequest()
                 .index("user")
-                .id("1001")
+                .id("1003")
                 .source(JSONUtil.toJsonStr(ly), XContentType.JSON);
         //创建批量请求对象
         BulkRequest bulkRequest = new BulkRequest();
         bulkRequest.add(wczIndex).add(zxbIndex).add(lyIndex);
+        //客户端发送请求 获取响应
+        BulkResponse bulkResponse = restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+        log.info("took:{}", bulkResponse.getTook());
+        log.info("items:{}", JSONUtil.toJsonStr(bulkResponse.getItems()));
+        log.info("bulkResponse:{}", JSONUtil.toJsonStr(bulkResponse));
+    }
+
+    @Test
+    @SneakyThrows
+    public void bulkDeleteTest() {
+        //创建批量请求对象
+        BulkRequest bulkRequest = new BulkRequest();
+        //添加删除请求对象
+        bulkRequest.add(new DeleteRequest().index("user").id("1001"));
+        bulkRequest.add(new DeleteRequest().index("user").id("1002"));
+        bulkRequest.add(new DeleteRequest().index("user").id("1003"));
         //客户端发送请求 获取响应
         BulkResponse bulkResponse = restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
         log.info("took:{}", bulkResponse.getTook());
