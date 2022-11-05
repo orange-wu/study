@@ -5,6 +5,7 @@ spring:
 
 elasticsearch:
   nodes:
+    # 这里可配置多节点
     - {ip: '43.139.118.53',port: 9200}
   connectTimeout: 60000
   socketTimeout: 60000

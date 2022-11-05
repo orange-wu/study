@@ -41,7 +41,7 @@ public class ElasticsearchIndexTest {
         //wczy.mapping("...", XContentType.JSON);
         CreateIndexResponse createResponse = restHighLevelClient.indices().create(wczy, RequestOptions.DEFAULT);
         log.info("result:{}", createResponse.isAcknowledged());
-        log.info("response:{}", createResponse);
+        log.info("response:{}", JSONUtil.toJsonStr(createResponse));
     }
 
     @SneakyThrows
@@ -50,7 +50,7 @@ public class ElasticsearchIndexTest {
         GetIndexRequest wczy = new GetIndexRequest("wczy");
         GetIndexResponse getIndexResponse = restHighLevelClient.indices().get(wczy, RequestOptions.DEFAULT);
         log.info("aliases:{}", getIndexResponse.getAliases());
-        log.info("mappings:{}", getIndexResponse.getMappings());
+        log.info("mappings:{}", JSONUtil.toJsonStr(getIndexResponse.getMappings()));
         log.info("settings:{}", getIndexResponse.getSettings());
         log.info("getIndexResponse:{}", JSONUtil.toJsonStr(getIndexResponse));
     }

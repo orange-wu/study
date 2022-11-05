@@ -16,6 +16,10 @@ import java.util.List;
 @ConfigurationProperties(prefix = "elasticsearch")
 @Data
 public class ESConfigProperties {
+
+    /**
+     * es集群节点地址集合
+     */
     private List<Nodes> nodes = new ArrayList<>();
 
     /**
