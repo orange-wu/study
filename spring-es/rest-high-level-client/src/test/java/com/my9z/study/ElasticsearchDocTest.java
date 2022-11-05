@@ -46,7 +46,7 @@ public class ElasticsearchDocTest {
         indexRequest.index("user")
                 .id("1001")
                 .source(JSONUtil.toJsonStr(wcz), XContentType.JSON);
-        //客户端发送请求，获取响应
+        //客户端发送请求 获取响应
         IndexResponse indexResponse = restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
         log.info("_index:{}", indexResponse.getIndex());
         log.info("_id:{}", indexResponse.getId());
@@ -63,7 +63,7 @@ public class ElasticsearchDocTest {
         updateRequest.index("user")
                 .id("1001")
                 .doc(XContentType.JSON, "age", 18);
-        //客户端发送请求，获取响应
+        //客户端发送请求 获取响应
         UpdateResponse updateResponse = restHighLevelClient.update(updateRequest, RequestOptions.DEFAULT);
         log.info("_index:{}", updateResponse.getIndex());
         log.info("_id:{}", updateResponse.getId());
@@ -79,7 +79,7 @@ public class ElasticsearchDocTest {
         //指定查询的index和id
         getRequest.index("user")
                 .id("1001");
-        //客户端发送请求，获取响应
+        //客户端发送请求 获取响应
         GetResponse getResponse = restHighLevelClient.get(getRequest, RequestOptions.DEFAULT);
         log.info("_index:{}", getResponse.getIndex());
         log.info("_type:{}", getResponse.getType());
