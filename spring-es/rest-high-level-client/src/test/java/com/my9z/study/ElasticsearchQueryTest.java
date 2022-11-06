@@ -6,6 +6,7 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -45,14 +46,7 @@ public class ElasticsearchQueryTest {
         searchRequest.indices("student").source(searchSourceBuilder);
         //客户端发送请求 获取响应
         SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-        SearchHits hits = searchResponse.getHits();
-        log.info("took:{}", searchResponse.getTook());
-        log.info("timeout:{}", searchResponse.isTimedOut());
-        log.info("total:{}", hits.getTotalHits());
-        log.info("maxSource:{}", hits.getMaxScore());
-        for (SearchHit hit : hits) {
-            log.info("hit:{}", hit.getSourceAsString());
-        }
+        printLog(searchResponse);
     }
 
     @Test
@@ -68,14 +62,7 @@ public class ElasticsearchQueryTest {
         searchRequest.indices("student").source(searchSourceBuilder);
         //客户端发送请求 获取响应
         SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-        SearchHits hits = searchResponse.getHits();
-        log.info("took:{}", searchResponse.getTook());
-        log.info("timeout:{}", searchResponse.isTimedOut());
-        log.info("total:{}", hits.getTotalHits());
-        log.info("maxSource:{}", hits.getMaxScore());
-        for (SearchHit hit : hits) {
-            log.info("hit:{}", hit.getSourceAsString());
-        }
+        printLog(searchResponse);
     }
 
     @Test
@@ -94,14 +81,7 @@ public class ElasticsearchQueryTest {
         searchRequest.indices("student").source(searchSourceBuilder);
         //客户端发送请求 获取响应
         SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-        SearchHits hits = searchResponse.getHits();
-        log.info("took:{}", searchResponse.getTook());
-        log.info("timeout:{}", searchResponse.isTimedOut());
-        log.info("total:{}", hits.getTotalHits());
-        log.info("maxSource:{}", hits.getMaxScore());
-        for (SearchHit hit : hits) {
-            log.info("hit:{}", hit.getSourceAsString());
-        }
+        printLog(searchResponse);
     }
 
     @Test
@@ -119,14 +99,7 @@ public class ElasticsearchQueryTest {
         searchRequest.indices("student").source(searchSourceBuilder);
         //客户端发送请求 获取响应
         SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-        SearchHits hits = searchResponse.getHits();
-        log.info("took:{}", searchResponse.getTook());
-        log.info("timeout:{}", searchResponse.isTimedOut());
-        log.info("total:{}", hits.getTotalHits());
-        log.info("maxSource:{}", hits.getMaxScore());
-        for (SearchHit hit : hits) {
-            log.info("hit:{}", hit.getSourceAsString());
-        }
+        printLog(searchResponse);
     }
 
     @Test
@@ -138,7 +111,7 @@ public class ElasticsearchQueryTest {
         searchSourceBuilder.query(QueryBuilders.matchAllQuery());
         //查询字段过滤
         //查询返回包含的字段
-        String[] includeFields = new String[]{"name","age"};
+        String[] includeFields = new String[]{"name", "age"};
         //查询返回排除的字段
         String[] excludeFields = new String[]{""};
         searchSourceBuilder.fetchSource(includeFields, excludeFields);
@@ -148,15 +121,9 @@ public class ElasticsearchQueryTest {
         searchRequest.indices("student").source(searchSourceBuilder);
         //客户端发送请求 获取响应
         SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-        SearchHits hits = searchResponse.getHits();
-        log.info("took:{}", searchResponse.getTook());
-        log.info("timeout:{}", searchResponse.isTimedOut());
-        log.info("total:{}", hits.getTotalHits());
-        log.info("maxSource:{}", hits.getMaxScore());
-        for (SearchHit hit : hits) {
-            log.info("hit:{}", hit.getSourceAsString());
-        }
+        printLog(searchResponse);
     }
+
 
     @Test
     @SneakyThrows
@@ -164,17 +131,36 @@ public class ElasticsearchQueryTest {
         //创建bool请求对象
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         //构建bool查询条件
-        boolQueryBuilder.must(QueryBuilders.matchQuery("name","zhangsan"));
-        boolQueryBuilder.mustNot(QueryBuilders.matchQuery("sex","女"));
+        boolQueryBuilder.must(QueryBuilders.matchQuery("name", "zhangsan"));
+        boolQueryBuilder.mustNot(QueryBuilders.matchQuery("sex", "女"));
         boolQueryBuilder.should(QueryBuilders.matchQuery("age", "40"));
-        //创建查询请求体
+        //指定查询条件：bool查询
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(boolQueryBuilder);
-        //
+        //创建查询请求对象
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.indices("student").source(searchSourceBuilder);
-        //
+        //客户端发送请求 获取响应
         SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        printLog(searchResponse);
+    }
+
+    @Test
+    @SneakyThrows
+    public void fuzzySearchTest() {
+        //构建查询请求体
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        //指定查询条件：模糊查询
+        searchSourceBuilder.query(QueryBuilders.fuzzyQuery("name", "zhangsan").fuzziness(Fuzziness.ONE));
+        //创建查询请求对象
+        SearchRequest searchRequest = new SearchRequest().indices("student").source(searchSourceBuilder);
+        //客户端发送请求 获取响应
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        //打印日志
+        printLog(searchResponse);
+    }
+
+    private void printLog(SearchResponse searchResponse) {
         SearchHits hits = searchResponse.getHits();
         log.info("took:{}", searchResponse.getTook());
         log.info("timeout:{}", searchResponse.isTimedOut());
