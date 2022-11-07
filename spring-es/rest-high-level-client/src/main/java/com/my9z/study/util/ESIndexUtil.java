@@ -33,8 +33,6 @@ public class ESIndexUtil {
     @Autowired
     private RestHighLevelClient restHighLevelClient;
 
-    /* ===================index api===================  */
-
     /**
      * 同步创建es索引
      *
