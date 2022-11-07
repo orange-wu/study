@@ -1,6 +1,6 @@
 package com.my9z.study;
 
-import com.my9z.study.util.ESWczyTemplate;
+import com.my9z.study.util.ESIndexUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,13 +16,21 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @Slf4j
-public class ESWczyTemplateTest {
+public class ESIndexUtilTest {
 
     @Autowired
-    private ESWczyTemplate esWczyTemplate;
+    private ESIndexUtil esIndexUtil;
 
     @Test
-    public void createIndex() {
-        esWczyTemplate.createIndex("wczy", 3, 1, null);
+    public void createIndexTest() {
+        esIndexUtil.createIndex("wczy", 3, 1, null);
     }
+
+    @Test
+    public void deleteIndexTest(){
+        esIndexUtil.deleteIndex("q");
+        esIndexUtil.deleteIndex("wczy");
+    }
+
+
 }

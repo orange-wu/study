@@ -5,12 +5,15 @@ import cn.hutool.json.JSONUtil;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.rest.RestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +27,7 @@ import java.util.Objects;
  */
 @Component
 @Slf4j
-public class ESWczyTemplate {
+public class ESIndexUtil {
 
     @Autowired
     private RestHighLevelClient restHighLevelClient;
@@ -41,7 +44,7 @@ public class ESWczyTemplate {
      * @return 索引是否创建成功
      */
     public boolean createIndex(@NonNull String indexName, Integer shardsNum, Integer replicasNum, String mappingJson) {
-        //创建index请求对象，设置index名
+        //创建新建index请求对象，设置index名
         CreateIndexRequest createIndexRequest = new CreateIndexRequest(indexName);
         //设置索引的主分片数量，副本数量
         //默认主分片数量
@@ -60,13 +63,44 @@ public class ESWczyTemplate {
         try {
             createIndexResponse = restHighLevelClient.indices().create(createIndexRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            log.error("createIndex:ES请求超时或者服务器无响应,indexName:{}", indexName, e);
+            log.error("createIndex fail:ES请求超时或者服务器无响应,indexName:{}", indexName, e);
             return false;
         } catch (ElasticsearchException e) {
-            log.error("createIndex:索引创建失败,indexName:{}", indexName, e);
+            log.error("createIndex fail:索引创建失败,indexName:{},status:{}", indexName, e.status(), e);
             return false;
         }
-        return Objects.nonNull(createIndexResponse) && createIndexResponse.isAcknowledged();
+        boolean result = Objects.nonNull(createIndexResponse) && createIndexResponse.isAcknowledged();
+        log.info(result ? "createIndex request success,indexName:{}" : "createIndex request fail,indexName:{}", indexName);
+        return result;
+    }
+
+    /**
+     * 根据index的名词删除index
+     *
+     * @param indexName 索引名
+     * @return 是否删除成功
+     */
+    public boolean deleteIndex(@NonNull String indexName) {
+        //创建删除index请求对象，设置index名
+        DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest(indexName);
+        //客户端发起请求 获取返回对象
+        AcknowledgedResponse deleteResponse;
+        try {
+            deleteResponse = restHighLevelClient.indices().delete(deleteIndexRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            log.error("deleteIndex fail:ES请求超时或者服务器无响应,indexName:{}", indexName, e);
+            return false;
+        } catch (ElasticsearchException e) {
+            if (e.status() == RestStatus.NOT_FOUND) {
+                log.error("deleteIndex fail:此索引不存在,indexName:{}", indexName, e);
+            } else {
+                log.error("deleteIndex fail:索引删除失败,indexName:{},status:{}", indexName, e.status(), e);
+            }
+            return false;
+        }
+        boolean result = Objects.nonNull(deleteResponse) && deleteResponse.isAcknowledged();
+        log.info(result ? "deleteIndex request success,indexName:{}" : "deleteIndex request fail,indexName:{}", indexName);
+        return result;
     }
 
 }
