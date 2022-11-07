@@ -84,10 +84,21 @@ public class EsDocumentUtil {
         return result;
     }
 
+    /**
+     * 通过id在指定index中获取document
+     *
+     * @param indexName 索引名
+     * @param id        id值
+     * @param clazz     返回类型
+     * @param <T>       文档类型
+     * @return 查找到的document实体
+     */
     public <T extends Serializable> T getDocById(@NonNull String indexName, @NonNull String id, @NonNull Class<T> clazz) {
+        //指定index id构建请求对象
         GetRequest getRequest = new GetRequest().index(indexName).id(id);
         GetResponse getResponse;
         try {
+            //客户端发送请求 获取响应
             getResponse = restHighLevelClient.get(getRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
             log.error("getDocById fail:ES请求超时或者服务器无响应", e);
@@ -102,5 +113,25 @@ public class EsDocumentUtil {
             return null;
         }
         return JSONUtil.toBean(getResponse.getSourceAsString(), clazz);
+    }
+
+    /**
+     * 查询指定index中某个id的document是否存在
+     * @param indexName 索引名
+     * @param id id值
+     * @return index中某个id的数据是否存在
+     */
+    public Boolean existsDoc(@NonNull String indexName, @NonNull String id) {
+        //指定index id构建请求对象
+        GetRequest getRequest = new GetRequest().index(indexName).id(id);
+        boolean result;
+        try {
+            //客户端发送请求 获取响应
+            result = restHighLevelClient.exists(getRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            log.error("getDocById fail:ES请求超时或者服务器无响应", e);
+            return null;
+        }
+        return result;
     }
 }

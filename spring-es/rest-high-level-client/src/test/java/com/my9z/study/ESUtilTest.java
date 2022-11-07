@@ -75,5 +75,12 @@ public class ESUtilTest {
         log.info("user:{}", JSONUtil.toJsonStr(user));
     }
 
+    @Test
+    public void existsDocTest(){
+        boolean result = esDocumentUtil.existsDoc("user", "1");
+        log.info("result:{}", result);
+    }
+
+
 
 }
