@@ -11,6 +11,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
+import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
@@ -21,7 +22,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * @description: RestHighLevelClient常用API封装
+ * @description: RestHighLevelClient index常用API封装
  * @author: kim
  * @createTime: 2022-11-07  11:40
  */
@@ -43,7 +44,7 @@ public class ESIndexUtil {
      * @param mappingJson mapping设置 JSON格式
      * @return 索引是否创建成功
      */
-    public boolean createIndex(@NonNull String indexName, Integer shardsNum, Integer replicasNum, String mappingJson) {
+    public Boolean createIndex(@NonNull String indexName, Integer shardsNum, Integer replicasNum, String mappingJson) {
         //创建新建index请求对象，设置index名
         CreateIndexRequest createIndexRequest = new CreateIndexRequest(indexName);
         //设置索引的主分片数量，副本数量
@@ -80,7 +81,7 @@ public class ESIndexUtil {
      * @param indexName 索引名
      * @return 是否删除成功
      */
-    public boolean deleteIndex(@NonNull String indexName) {
+    public Boolean deleteIndex(@NonNull String indexName) {
         //创建删除index请求对象，设置index名
         DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest(indexName);
         //客户端发起请求 获取返回对象
@@ -101,6 +102,24 @@ public class ESIndexUtil {
         boolean result = Objects.nonNull(deleteResponse) && deleteResponse.isAcknowledged();
         log.info(result ? "deleteIndex request success,indexName:{}" : "deleteIndex request fail,indexName:{}", indexName);
         return result;
+    }
+
+    /**
+     * 查看index是否存在
+     *
+     * @param indexName 索引名
+     * @return true代表存在 false代表不存在 null代表连接失败
+     */
+    public Boolean existsIndex(@NonNull String indexName) {
+        GetIndexRequest getIndexRequest = new GetIndexRequest(indexName);
+        boolean exists;
+        try {
+            exists = restHighLevelClient.indices().exists(getIndexRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            log.error("existsIndex fail:ES请求超时或者服务器无响应,indexName:{}", indexName, e);
+            return null;
+        }
+        return exists;
     }
 
 }

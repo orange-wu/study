@@ -16,7 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @Slf4j
-public class ESIndexUtilTest {
+public class ESUtilTest {
 
     @Autowired
     private ESIndexUtil esIndexUtil;
@@ -27,9 +27,15 @@ public class ESIndexUtilTest {
     }
 
     @Test
-    public void deleteIndexTest(){
+    public void deleteIndexTest() {
         esIndexUtil.deleteIndex("q");
         esIndexUtil.deleteIndex("wczy");
+    }
+
+    @Test
+    public void existsIndexTest() {
+        log.info(esIndexUtil.existsIndex("q").toString());
+        log.info(esIndexUtil.existsIndex("wczy").toString());
     }
 
 
