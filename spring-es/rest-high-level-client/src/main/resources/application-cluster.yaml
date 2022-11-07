@@ -1,0 +1,18 @@
+spring:
+  elasticsearch:
+    rest:
+      uris: http://43.139.118.53:9200
+
+elasticsearch:
+  nodes:
+    # 这里可配置多节点
+    - {ip: '43.139.118.53',port: 9201}
+    - {ip: '43.139.118.53',port: 9202}
+    - {ip: '43.139.118.53',port: 9203}
+  connectTimeout: 60000
+  socketTimeout: 60000
+  connectionRequestTimeout: 1500
+  maxConnectPerRoute: 200
+  maxConnectTotal: 200
+  username:
+  password:
