@@ -1,5 +1,6 @@
 package com.my9z.study;
 
+import cn.hutool.json.JSONUtil;
 import com.my9z.study.pojo.User;
 import com.my9z.study.util.ESIndexUtil;
 import com.my9z.study.util.EsDocumentUtil;
@@ -66,6 +67,12 @@ public class ESUtilTest {
         User user = User.builder().id("1").name("wcz").age(12).sex("男").build();
         Boolean insert = esDocumentUtil.insert("user", user, User::getId);
         log.info("insert:{}", insert);
+    }
+
+    @Test
+    public void getDocByIdTest(){
+        User user = esDocumentUtil.getDocById("user", "1", User.class);
+        log.info("user:{}", JSONUtil.toJsonStr(user));
     }
 
 
