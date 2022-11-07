@@ -11,9 +11,12 @@ import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.update.UpdateRequest;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.get.GetResult;
 import org.elasticsearch.rest.RestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -140,14 +143,17 @@ public class EsDocumentUtil {
 
     /**
      * 删除指定index中id值的数据
+     *
      * @param indexName 索引名
-     * @param id id值
+     * @param id        id值
      * @return 是否删除成功
      */
     public Boolean deleteDoc(@NonNull String indexName, @NonNull String id) {
+        //指定index id构建请求对象
         DeleteRequest deleteRequest = new DeleteRequest().index(indexName).id(id);
         DeleteResponse deleteResponse;
         try {
+            //客户端发送请求 获取响应
             deleteResponse = restHighLevelClient.delete(deleteRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
             log.error("deleteDoc fail:ES请求超时或者服务器无响应", e);
@@ -165,6 +171,55 @@ public class EsDocumentUtil {
             log.warn("deleteDoc fail:数据不存在 indexName:{},id:{}", indexName, id);
             return false;
         }
-        return DocWriteResponse.Result.DELETED == deleteResponse.getResult();
+        boolean result = DocWriteResponse.Result.DELETED == deleteResponse.getResult();
+        log.info(result ? "deleteDoc request success indexName:{},id:{}"
+                        : "deleteDoc request fail indexName:{},id:{}",
+                indexName, id);
+        return result;
+    }
+
+    /**
+     * 修改指定index id的数据
+     *
+     * @param indexName 索引名
+     * @param id        id值
+     * @param updateDoc 需要修改的内容
+     * @param <T>       修改的类型
+     * @return 修改后的数据
+     */
+    public <T extends Serializable> T updateDocById(@NonNull String indexName, @NonNull String id, @NonNull T updateDoc) {
+        if (!existsDoc(indexName, id)) {
+            log.info("updateDocById error data:数据不存在 indexName:{} id:{}", indexName, id);
+            return null;
+        }
+        //指定index id 以及修改的docData
+        UpdateRequest updateRequest = new UpdateRequest()
+                .index(indexName)
+                .id(id)
+                .doc(JSONUtil.toJsonStr(updateDoc), XContentType.JSON)
+                .fetchSource(true)//启用数据检查 返回修改后的对象
+                .docAsUpsert(true);//只能做修改操作（数据不存在也不会新增）
+        //客户端发送请求 获取响应
+        UpdateResponse updateResponse;
+        try {
+            updateResponse = restHighLevelClient.update(updateRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            log.error("updateDocById fail:ES请求超时或者服务器无响应", e);
+            return null;
+        } catch (ElasticsearchException e) {
+            if (e.status() == RestStatus.NOT_FOUND) {
+                //索引不存在
+                log.warn("updateDocById fail:索引不存在 indexName:{}", indexName, e);
+            } else {
+                log.warn("updateDocById fail:修改失败 indexName:{},id:{}", indexName, id, e);
+            }
+            return null;
+        }
+        //判断是否有更新后的数据（fetchSource需要设置为true）
+        GetResult getResult = updateResponse.getGetResult();
+        //获取更新成功之后的数据
+        T updateResult = (T) JSONUtil.toBean(getResult.sourceAsString(), updateDoc.getClass());
+        log.info("updateDocById request success indexName:{},id:{},updateData:{}", indexName, id, updateResult);
+        return updateResult;
     }
 }

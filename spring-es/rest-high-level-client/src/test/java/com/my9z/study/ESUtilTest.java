@@ -82,8 +82,16 @@ public class ESUtilTest {
     }
 
     @Test
-    public void deleteDocById(){
-        boolean result = esDocumentUtil.deleteDoc("user1", "1");
+    public void deleteDocByIdTest(){
+        boolean result = esDocumentUtil.deleteDoc("user", "1");
+        log.info("result:{}", result);
+    }
+
+    @Test
+    public void updateDocByIdTest(){
+        User user = User.builder().age(23).build();
+        User result = esDocumentUtil.updateDocById("user", "1",user);
+        log.info("result:{}", result);
     }
 
 
