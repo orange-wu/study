@@ -3,6 +3,8 @@ package com.my9z.study.pojo;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @description: 文档操作数据模型
  * @author: wczy9
@@ -10,7 +12,12 @@ import lombok.Data;
  */
 @Data
 @Builder
-public class User {
+public class User implements Serializable {
+
+    /**
+     * id
+     */
+    private String id;
 
     /**
      * 姓名

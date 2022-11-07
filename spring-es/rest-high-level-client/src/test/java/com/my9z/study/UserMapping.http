@@ -1,0 +1,29 @@
+PUT http://43.139.118.53:9201/user
+Content-Type: application/json
+
+{
+  "settings": {
+    "index.number_of_shards": 3,
+    "index.number_of_replicas": 1
+  },
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "keyword",
+        "index": true
+      },
+      "name": {
+        "type": "keyword",
+        "index": true
+      },
+      "sex": {
+        "type": "keyword",
+        "index": true
+      },
+      "age": {
+        "type": "long",
+        "index": true
+      }
+    }
+  }
+}
