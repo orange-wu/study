@@ -1,5 +1,7 @@
 package com.my9z.study;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.json.JSONUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.search.SearchRequest;
@@ -11,13 +13,18 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.Objects;
 
 
 /**
@@ -160,14 +167,75 @@ public class ElasticsearchQueryTest {
         printLog(searchResponse);
     }
 
+    @Test
+    @SneakyThrows
+    public void highlightSearchTest() {
+        //构建查询请求体
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        //指定查询条件：term查询
+        searchSourceBuilder.query(QueryBuilders.termQuery("name", "zhangsan"));
+        //设置高亮查询对象
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.preTags("<font color = 'red'>") //标签前缀
+                .postTags("</font>") //标签后缀
+                .field("name"); //高亮字段
+        //设置请求体
+        searchSourceBuilder.highlighter(highlightBuilder);
+        //创建查询请求对象
+        SearchRequest searchRequest = new SearchRequest().indices("student").source(searchSourceBuilder);
+        //客户端发送请求 获取响应
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        //打印日志
+        printLog(searchResponse);
+    }
+
+    @Test
+    @SneakyThrows
+    public void aggregateSearchTest() {
+        //构建查询请求体
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        //指定聚合字段和聚合方式  age字段的最大值 返回字段名为maxAge
+        searchSourceBuilder.aggregation(AggregationBuilders.max("maxAge").field("age"));
+        //创建查询请求对象
+        SearchRequest searchRequest = new SearchRequest().indices("student").source(searchSourceBuilder);
+        //客户端发送轻松 获取响应
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        //打印日志
+        printLog(searchResponse);
+    }
+
+    @Test
+    @SneakyThrows
+    public void aggregateGroupSearchTest(){
+        //构建查询请求体
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        //指定分组条件 按照age来分组 分组名为age_group
+        TermsAggregationBuilder termsAggregationBuilder = AggregationBuilders.terms("age_group").field("age");
+        //每一组求和age的值 对应字段名为sum_age
+        termsAggregationBuilder.subAggregation(AggregationBuilders.sum("sum_age").field("age"));
+        searchSourceBuilder.aggregation(termsAggregationBuilder);
+        //创建查询请求对象
+        SearchRequest searchRequest = new SearchRequest().indices("student").source(searchSourceBuilder);
+        //客户端发送轻松 获取响应
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        //打印日志
+        printLog(searchResponse);
+    }
+
     private void printLog(SearchResponse searchResponse) {
         SearchHits hits = searchResponse.getHits();
         log.info("took:{}", searchResponse.getTook());
         log.info("timeout:{}", searchResponse.isTimedOut());
         log.info("total:{}", hits.getTotalHits());
         log.info("maxSource:{}", hits.getMaxScore());
+        if (Objects.nonNull(searchResponse.getAggregations())) {
+            log.info("aggregation:{}", JSONUtil.toJsonStr(searchResponse.getAggregations()));
+        }
         for (SearchHit hit : hits) {
             log.info("hit:{}", hit.getSourceAsString());
+            if (CollUtil.isNotEmpty(hit.getHighlightFields())) {
+                log.info("highlightFields:{}", hit.getHighlightFields().toString());
+            }
         }
     }
 }
