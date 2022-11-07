@@ -77,8 +77,13 @@ public class ESUtilTest {
 
     @Test
     public void existsDocTest(){
-        boolean result = esDocumentUtil.existsDoc("user", "1");
+        boolean result = esDocumentUtil.existsDoc("user1", "1");
         log.info("result:{}", result);
+    }
+
+    @Test
+    public void deleteDocById(){
+        boolean result = esDocumentUtil.deleteDoc("user1", "1");
     }
 
 

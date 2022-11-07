@@ -5,6 +5,8 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.DocWriteResponse;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -117,8 +119,9 @@ public class EsDocumentUtil {
 
     /**
      * 查询指定index中某个id的document是否存在
+     *
      * @param indexName 索引名
-     * @param id id值
+     * @param id        id值
      * @return index中某个id的数据是否存在
      */
     public Boolean existsDoc(@NonNull String indexName, @NonNull String id) {
@@ -129,9 +132,39 @@ public class EsDocumentUtil {
             //客户端发送请求 获取响应
             result = restHighLevelClient.exists(getRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            log.error("getDocById fail:ES请求超时或者服务器无响应", e);
+            log.error("existsDoc fail:ES请求超时或者服务器无响应", e);
             return null;
         }
         return result;
+    }
+
+    /**
+     * 删除指定index中id值的数据
+     * @param indexName 索引名
+     * @param id id值
+     * @return 是否删除成功
+     */
+    public Boolean deleteDoc(@NonNull String indexName, @NonNull String id) {
+        DeleteRequest deleteRequest = new DeleteRequest().index(indexName).id(id);
+        DeleteResponse deleteResponse;
+        try {
+            deleteResponse = restHighLevelClient.delete(deleteRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            log.error("deleteDoc fail:ES请求超时或者服务器无响应", e);
+            return false;
+        } catch (ElasticsearchException e) {
+            if (e.status() == RestStatus.NOT_FOUND) {
+                //索引不存在
+                log.warn("deleteDoc fail:索引不存在 indexName:{}", indexName, e);
+            } else {
+                log.warn("deleteDoc fail:删除失败 indexName:{},id:{}", indexName, id, e);
+            }
+            return null;
+        }
+        if (deleteResponse.getResult() == DocWriteResponse.Result.NOT_FOUND) {
+            log.warn("deleteDoc fail:数据不存在 indexName:{},id:{}", indexName, id);
+            return false;
+        }
+        return DocWriteResponse.Result.DELETED == deleteResponse.getResult();
     }
 }
