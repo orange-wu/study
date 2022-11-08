@@ -7,6 +7,7 @@ Content-Type: application/json
     "index.number_of_replicas": 1
   },
   "mappings": {
+    "dynamic": false,
     "properties": {
       "id": {
         "type": "keyword",

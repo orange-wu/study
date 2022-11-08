@@ -1,10 +1,12 @@
 package com.my9z.study.util;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.DocWriteResponse;
+import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
@@ -23,8 +25,11 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @description: RestHighLevelClient document常用API封装
@@ -184,11 +189,13 @@ public class EsDocumentUtil {
      * @param indexName 索引名
      * @param id        id值
      * @param updateDoc 需要修改的内容
-     * @param <T>       修改的类型
+     * @param <T>       返回的类型
+     * @param clazz     返回对象的class
      * @return 修改后的数据
      */
-    public <T extends Serializable> T updateDocById(@NonNull String indexName, @NonNull String id, @NonNull T updateDoc) {
+    public <T extends Serializable> T updateDocById(@NonNull String indexName, @NonNull String id, @NonNull Object updateDoc, @NonNull Class<T> clazz) {
         if (!existsDoc(indexName, id)) {
+            //指定数据不存在没有修改一说
             log.info("updateDocById error data:数据不存在 indexName:{} id:{}", indexName, id);
             return null;
         }
@@ -215,11 +222,57 @@ public class EsDocumentUtil {
             }
             return null;
         }
-        //判断是否有更新后的数据（fetchSource需要设置为true）
+        //更新后的数据（fetchSource需要设置为true）
         GetResult getResult = updateResponse.getGetResult();
         //获取更新成功之后的数据
-        T updateResult = (T) JSONUtil.toBean(getResult.sourceAsString(), updateDoc.getClass());
+        T updateResult = JSONUtil.toBean(getResult.sourceAsString(), clazz);
         log.info("updateDocById request success indexName:{},id:{},updateData:{}", indexName, id, updateResult);
         return updateResult;
+    }
+
+    /**
+     * 批量添加文档数据 (只会做新增操作,对于id已存在的数据不做修改)
+     *
+     * @param dataCollection 文档数据集合
+     * @param indexName      索引名
+     * @param idFunction     获取id的方法
+     * @param <T>            文档类型
+     * @param <R>            id字段类型
+     * @return 请求是否成功
+     */
+    public <T extends Serializable, R> Boolean insertBatch(Collection<T> dataCollection, @NonNull String indexName, @NonNull Function<T, R> idFunction) {
+        if (CollUtil.isEmpty(dataCollection)) {
+            //批量插入的数据为空 直接返回true
+            log.info("insertBatch success because dataCollection is empty");
+            return true;
+        }
+        //过滤Id值为空的数据
+        List<T> insertDataList = dataCollection.stream()
+                .filter(data -> Objects.nonNull(idFunction.apply(data)))
+                .collect(Collectors.toList());
+        log.info("insertBatch 过滤id空值之后insertDataList:{}", JSONUtil.toJsonStr(insertDataList));
+        if (CollUtil.isEmpty(insertDataList)) {
+            //每条数据指定的id字段为空 直接返回false
+            log.info("insertBatch fail because dataCollection all id value is null ");
+            return false;
+        }
+        //构建批量请求对象
+        BulkRequest bulkRequest = new BulkRequest();
+        insertDataList.forEach(data -> {
+            IndexRequest indexRequest = new IndexRequest()
+                    .index(indexName)
+                    .id(String.valueOf(idFunction.apply(data)))
+                    .create(true)
+                    .source(JSONUtil.toJsonStr(data), XContentType.JSON);
+            bulkRequest.add(indexRequest);
+        });
+        try {
+            restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            log.error("insertBatch fail:ES请求超时或者服务器无响应", e);
+            return false;
+        }
+        log.info("insertBatch request success indexName:{},idList:{}", indexName, dataCollection.stream().map(idFunction).collect(Collectors.toList()));
+        return true;
     }
 }

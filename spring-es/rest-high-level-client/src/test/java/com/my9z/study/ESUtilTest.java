@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
+
 /**
  * @description: es操作封装类测试
  * @author: kim
@@ -89,9 +91,18 @@ public class ESUtilTest {
 
     @Test
     public void updateDocByIdTest(){
-        User user = User.builder().age(23).build();
-        User result = esDocumentUtil.updateDocById("user", "1",user);
-        log.info("result:{}", result);
+        User user = User.builder().age(25).name("wczy").build();
+        User result = esDocumentUtil.updateDocById("user", "1",user,User.class);
+    }
+
+    @Test
+    public void insertBatchTest(){
+        ArrayList<User> users = new ArrayList<>();
+        for (int i = 2; i <=8; i++) {
+            User user = User.builder().age(25).name("wczy==" + i).id(String.valueOf(i)).build();
+            users.add(user);
+        }
+        esDocumentUtil.insertBatch(users,"user",User::getId);
     }
 
 
