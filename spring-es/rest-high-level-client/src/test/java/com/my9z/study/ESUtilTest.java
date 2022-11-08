@@ -72,39 +72,40 @@ public class ESUtilTest {
     }
 
     @Test
-    public void getDocByIdTest(){
+    public void getDocByIdTest() {
         User user = esDocumentUtil.getDocById("user", "1", User.class);
         log.info("user:{}", JSONUtil.toJsonStr(user));
     }
 
     @Test
-    public void existsDocTest(){
+    public void existsDocTest() {
         boolean result = esDocumentUtil.existsDoc("user1", "1");
         log.info("result:{}", result);
     }
 
     @Test
-    public void deleteDocByIdTest(){
+    public void deleteDocByIdTest() {
         boolean result = esDocumentUtil.deleteDoc("user", "1");
         log.info("result:{}", result);
     }
 
     @Test
-    public void updateDocByIdTest(){
+    public void updateDocByIdTest() {
         User user = User.builder().age(25).name("wczy").build();
-        User result = esDocumentUtil.updateDocById("user", "1",user,User.class);
+        User result = esDocumentUtil.updateDocById("user", "1", user, User.class);
+        log.info("result:{}", result);
     }
 
     @Test
-    public void insertBatchTest(){
+    public void insertBatchTest() {
         ArrayList<User> users = new ArrayList<>();
-        for (int i = 2; i <=8; i++) {
+        for (int i = 2; i <= 8; i++) {
             User user = User.builder().age(25).name("wczy==" + i).id(String.valueOf(i)).build();
             users.add(user);
         }
-        esDocumentUtil.insertBatch(users,"user",User::getId);
+        Boolean insertBatch = esDocumentUtil.insertBatch(users, "user", User::getId);
+        log.info("result:{}", insertBatch);
     }
-
 
 
 }
