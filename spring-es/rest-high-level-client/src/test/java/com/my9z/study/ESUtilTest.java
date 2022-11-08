@@ -3,7 +3,9 @@ package com.my9z.study;
 import cn.hutool.json.JSONUtil;
 import com.my9z.study.pojo.User;
 import com.my9z.study.util.ESIndexUtil;
+import com.my9z.study.util.ESQueryUtil;
 import com.my9z.study.util.EsDocumentUtil;
+import com.my9z.study.util.builder.query.ESQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +30,9 @@ public class ESUtilTest {
 
     @Autowired
     private EsDocumentUtil esDocumentUtil;
+
+    @Autowired
+    private ESQueryUtil esQueryUtil;
 
     @Test
     public void createIndexTest() {
@@ -107,5 +112,16 @@ public class ESUtilTest {
         log.info("result:{}", insertBatch);
     }
 
+    @Test
+    public void searchTest(){
+        ESQuery esQuery = ESQuery.builder()
+                .must()
+                .termQuery("name", "wczy")
+                .done()
+                .indexes("user")
+                .trackTotalHits(true)
+                .build();
+        esQueryUtil.search(esQuery);
+    }
 
 }
