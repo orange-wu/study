@@ -1,5 +1,6 @@
 package com.my9z.study.util.builder.query;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -7,8 +8,12 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @description: ES查询构造类
@@ -31,6 +36,7 @@ public class ESQuery {
     public ESQuery(Builder builder) {
         this.searchSourceBuilder = builder.searchSourceBuilder;
         this.indexes = builder.indexes;
+
     }
 
     public static Builder builder() {
@@ -44,9 +50,17 @@ public class ESQuery {
         private final SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         //请求的index
         private final List<String> indexes = ListUtil.list(false);
+        //是否需要统计命中总数
+        private boolean trackTotalHits = true;
+        //es的分页参数 from
+        private Integer from;
+        //es的分页参数 size
+        private Integer size;
+        //es的排序查询参数
+        private final List<SortBuilder<?>> sortBuilders = ListUtil.list(false);
         //es的bool查询
         private final BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-        //查询条件builder
+        //查询条件mustBuilder
         private final MustBuilder mustBuilder = new MustBuilder();
 
         /**
@@ -54,6 +68,16 @@ public class ESQuery {
          */
         public ESQuery build() {
             searchSourceBuilder.query(boolQueryBuilder);
+            searchSourceBuilder.trackTotalHits(trackTotalHits);
+            if (Objects.nonNull(from)) {
+                searchSourceBuilder.from(from);
+            }
+            if (Objects.nonNull(size)) {
+                searchSourceBuilder.size(size);
+            }
+            if (CollUtil.isNotEmpty(sortBuilders)) {
+                searchSourceBuilder.sort(sortBuilders);
+            }
             return new ESQuery(this);
         }
 
@@ -67,7 +91,7 @@ public class ESQuery {
         /**
          * 指定index
          */
-        public Builder indexes(String indexName){
+        public Builder indexes(String indexName) {
             indexes.add(indexName);
             return this;
         }
@@ -75,11 +99,35 @@ public class ESQuery {
         /**
          * 是否需要统计命中总数
          */
-        public Builder trackTotalHits(boolean trackTotalHits){
-            searchSourceBuilder.trackTotalHits(trackTotalHits);
+        public Builder trackTotalHits(boolean trackTotalHits) {
+            this.trackTotalHits = trackTotalHits;
             return this;
         }
 
+        /**
+         * 分页查询参数
+         *
+         * @param currentPage 第几页 小于1时取1
+         * @param pageSize    一页几行 小于0时取10
+         */
+        public Builder page(int currentPage, int pageSize) {
+            pageSize = pageSize < 0 ? 10 : pageSize;
+            currentPage = Math.max(currentPage, 1);
+            from = (currentPage - 1) * pageSize;
+            size = pageSize;
+            return this;
+        }
+
+        /**
+         * 排序查询参数
+         *
+         * @param sortField 排序字段
+         * @param isDesc    是否倒序
+         */
+        public Builder sort(String sortField, boolean isDesc) {
+            sortBuilders.add(SortBuilders.fieldSort(sortField).order(isDesc ? SortOrder.DESC : SortOrder.ASC));
+            return this;
+        }
 
 
         /**

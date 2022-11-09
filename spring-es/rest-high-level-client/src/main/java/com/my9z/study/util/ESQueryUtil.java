@@ -32,6 +32,7 @@ public class ESQueryUtil {
         try {
             SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
             SearchHits hits = searchResponse.getHits();
+            //如果没有开启查询总数,则getTotalHits为空
             long value = hits.getTotalHits().value;
             log.info("total:{}",value);
             for (SearchHit hit : hits) {

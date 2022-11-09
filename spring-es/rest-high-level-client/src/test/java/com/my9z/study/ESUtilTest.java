@@ -124,4 +124,25 @@ public class ESUtilTest {
         esQueryUtil.search(esQuery);
     }
 
+    @Test
+    public void pageSearchTest(){
+        ESQuery esQuery = ESQuery.builder()
+                .page(0, 1)
+                .indexes("user")
+                .trackTotalHits(true)
+                .build();
+        esQueryUtil.search(esQuery);
+    }
+
+    @Test
+    public void sortSearchTest(){
+        ESQuery esQuery = ESQuery.builder()
+                .page(1,4)
+                .sort("id", false)
+                .trackTotalHits(true)
+                .indexes("user")
+                .build();
+        esQueryUtil.search(esQuery);
+    }
+
 }
