@@ -1,6 +1,7 @@
 package com.my9z.study;
 
 import cn.hutool.json.JSONUtil;
+import com.my9z.study.pojo.Page;
 import com.my9z.study.pojo.User;
 import com.my9z.study.util.ESIndexUtil;
 import com.my9z.study.util.ESQueryUtil;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @description: es操作封装类测试
@@ -114,7 +116,7 @@ public class ESUtilTest {
     }
 
     @Test
-    public void searchTest(){
+    public void searchTest() {
         ESQuery esQuery = ESQuery.builder()
                 .must()
                 .termQuery("name", "wczy")
@@ -122,88 +124,89 @@ public class ESUtilTest {
                 .indexes("user")
                 .trackTotalHits(true)
                 .build();
-        esQueryUtil.search(esQuery);
+        List<User> search = esQueryUtil.search(esQuery, User.class);
+        log.info("search:{}", JSONUtil.toJsonStr(search));
     }
 
     @Test
-    public void pageSearchTest(){
+    public void pageSearchTest() {
         ESQuery esQuery = ESQuery.builder()
-                .page(0, 1)
+                .page(1, 4)
                 .indexes("user")
-                .trackTotalHits(true)
+                .sort("id",false)
                 .build();
-        esQueryUtil.search(esQuery);
+        Page<User> userPage = esQueryUtil.searchPage(esQuery, User.class);
+        log.info("userPage:{}", JSONUtil.toJsonStr(userPage));
     }
 
     @Test
-    public void sortSearchTest(){
+    public void sortSearchTest() {
         ESQuery esQuery = ESQuery.builder()
-                .page(1,4)
+                .page(1, 4)
                 .sort("id", false)
                 .trackTotalHits(true)
                 .indexes("user")
                 .build();
-        esQueryUtil.search(esQuery);
+        esQueryUtil.search(esQuery, User.class);
     }
 
     @Test
-    public void shouldSearchTest(){
+    public void shouldSearchTest() {
         ESQuery esQuery = ESQuery.builder()
                 .must().termQuery("id", 2).done()
                 .should().termQuery("name", "wczy").done()
                 .trackTotalHits(true)
                 .indexes("user")
                 .build();
-        esQueryUtil.search(esQuery);
+        esQueryUtil.search(esQuery, User.class);
         ESQuery esQuery1 = ESQuery.builder()
                 .must().termQuery("id", 2).done()
-                .should().termQuery("name", "wczy").termQuery("name","wczy==2")
+                .should().termQuery("name", "wczy").termQuery("name", "wczy==2")
                 .done()
                 .trackTotalHits(true)
                 .indexes("user")
                 .minimumShouldMatch(1)
                 .build();
-        esQueryUtil.search(esQuery1);
+        esQueryUtil.search(esQuery1, User.class);
     }
 
     @Test
-    public void termsSearchTest(){
+    public void termsSearchTest() {
         ESQuery esQuery = ESQuery.builder()
                 .must().termsQuery("name", Lists.list("wczy", "wczy==2")).done()
                 .indexes("user")
                 .trackTotalHits(true)
                 .build();
-        esQueryUtil.search(esQuery);
+        esQueryUtil.search(esQuery, User.class);
 
         ESQuery esQuery1 = ESQuery.builder()
                 .must().rangeQuery("id", 1, 5).done()
                 .indexes("user")
                 .trackTotalHits(true)
                 .build();
-        esQueryUtil.search(esQuery1);
+        esQueryUtil.search(esQuery1, User.class);
 
         ESQuery esQuery2 = ESQuery.builder()
                 .must().lte("id", 4).done()
                 .indexes("user")
                 .trackTotalHits(true)
                 .build();
-        esQueryUtil.search(esQuery2);
+        esQueryUtil.search(esQuery2, User.class);
 
         ESQuery esQuery3 = ESQuery.builder()
                 .must().gte("id", 4).done()
                 .indexes("user")
                 .trackTotalHits(true)
                 .build();
-        esQueryUtil.search(esQuery3);
+        esQueryUtil.search(esQuery3, User.class);
 
         ESQuery esQuery4 = ESQuery.builder()
-                .must().matchQuery("name","wczy").done()
+                .must().matchQuery("name", "wczy").done()
                 .indexes("user")
                 .trackTotalHits(true)
                 .build();
-        esQueryUtil.search(esQuery4);
+        esQueryUtil.search(esQuery4, User.class);
     }
-
 
 
 }

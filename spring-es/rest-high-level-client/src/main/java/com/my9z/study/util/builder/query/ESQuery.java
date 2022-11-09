@@ -34,10 +34,21 @@ public class ESQuery {
      */
     private final List<String> indexes;
 
+    /**
+     * 当前页数
+     */
+    private final Integer currentPage;
+
+    /**
+     * 页的大小
+     */
+    private final Integer pageSize;
+
     public ESQuery(Builder builder) {
         this.searchSourceBuilder = builder.searchSourceBuilder;
         this.indexes = builder.indexes;
-
+        this.currentPage = builder.currentPage;
+        this.pageSize = builder.pageSize;
     }
 
     public static Builder builder() {
@@ -53,10 +64,10 @@ public class ESQuery {
         private final List<String> indexes = ListUtil.list(false);
         //是否需要统计命中总数
         private boolean trackTotalHits = true;
-        //es的分页参数 from
-        private Integer from;
-        //es的分页参数 size
-        private Integer size;
+        //当前页数
+        private Integer currentPage;
+        //页的大小
+        private Integer pageSize;
         //es的排序查询参数
         private final List<SortBuilder<?>> sortBuilders = ListUtil.list(false);
         //es的bool查询
@@ -73,17 +84,20 @@ public class ESQuery {
          * build构造ESQuery
          */
         public ESQuery build() {
+            //bool查询的属性:minimum_number_should_match
             if (Objects.nonNull(minimumShouldMatch)) {
                 boolQueryBuilder.minimumShouldMatch(minimumShouldMatch);
             }
+            //bool查询对象
             searchSourceBuilder.query(boolQueryBuilder);
+            //统计命中次数
             searchSourceBuilder.trackTotalHits(trackTotalHits);
-            if (Objects.nonNull(from)) {
-                searchSourceBuilder.from(from);
+            //es分页参数计算
+            if (Objects.nonNull(currentPage) && Objects.nonNull(pageSize)) {
+                searchSourceBuilder.from((currentPage - 1) * pageSize);
+                searchSourceBuilder.size(pageSize);
             }
-            if (Objects.nonNull(size)) {
-                searchSourceBuilder.size(size);
-            }
+            //排序builder
             if (CollUtil.isNotEmpty(sortBuilders)) {
                 searchSourceBuilder.sort(sortBuilders);
             }
@@ -150,10 +164,8 @@ public class ESQuery {
          * @param pageSize    一页几行 小于0时取10
          */
         public Builder page(int currentPage, int pageSize) {
-            pageSize = pageSize < 0 ? 10 : pageSize;
-            currentPage = Math.max(currentPage, 1);
-            from = (currentPage - 1) * pageSize;
-            size = pageSize;
+            this.currentPage = Math.max(currentPage, 1);
+            this.pageSize = pageSize < 0 ? 10 : pageSize;
             return this;
         }
 
@@ -302,7 +314,5 @@ public class ESQuery {
                 boolQueryBuilder.should(queryBuilder);
             }
         }
-
-
     }
 }
