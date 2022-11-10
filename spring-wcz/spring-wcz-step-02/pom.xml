@@ -3,33 +3,20 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>study</artifactId>
+        <artifactId>spring-wcz</artifactId>
         <groupId>org.wczy</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
     <description>
-        《手写spring》书籍学习
+        实现Bean对象的定义、注册和获取
+        通过使用AbstractBeanFactory抽象类，运用模版模式拆分功能，解耦Spring Bean容器，处理界限上下文关系，完成BeanFactory接口的实现。
     </description>
-    <modules>
-        <module>spring-wcz-step-01</module>
-        <module>spring-wcz-step-02</module>
-    </modules>
-    <artifactId>spring-wcz</artifactId>
+    <artifactId>spring-wcz-step-02</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
 </project>
