@@ -7,7 +7,15 @@ package study.bean;
  */
 public class UserService {
 
-    public void queryUserInfo(){
+    /**
+     * private String name;
+     * <p>
+     * public UserService(String name){
+     * this.name = name;
+     * }
+     */
+
+    public void queryUserInfo() {
         System.out.println("wcz query user info !");
     }
 
