@@ -1,0 +1,24 @@
+@startuml
+
+autonumber
+actor client as client
+participant DefaultListableBeanFactory as defaultListableBeanFactory
+participant AbstractBeanFactory as abstractBeanFactory
+participant DefaultSingletonBeanRegistry as defaultSingletonBeanRegistry
+participant AbstractAutowireCapableBeanFactory as abstractAutowireCapableBeanFactory
+participant InstantiationStrategy as instantiationStrategy
+
+client -> defaultListableBeanFactory:实例化beanFactory对象
+defaultListableBeanFactory -> abstractBeanFactory:获取bean对象:getBean()
+abstractBeanFactory -> defaultSingletonBeanRegistry:从单例表中获取:getSingleton()
+return 单例表中没有对应的bean对象
+abstractBeanFactory -> defaultListableBeanFactory:获取BeanDefinition对象:getBeanDefinition()
+defaultListableBeanFactory -> abstractBeanFactory:返回BeanDefinition对象
+abstractBeanFactory -> abstractAutowireCapableBeanFactory:创建bean对象:createBean()
+abstractAutowireCapableBeanFactory -> instantiationStrategy:实例化bean对象:instantiate()
+instantiationStrategy -> abstractAutowireCapableBeanFactory:返回bean对象
+abstractAutowireCapableBeanFactory -> defaultSingletonBeanRegistry:将bean对象注册进单例表:registerSingleton()
+abstractAutowireCapableBeanFactory -> abstractBeanFactory:返回bean对象
+abstractBeanFactory -> client:返回bean对象
+
+@enduml
