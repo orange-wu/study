@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>spring-wcz-step-03</artifactId>
+    <artifactId>spring-wcz-step-04</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
