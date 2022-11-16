@@ -1,9 +1,11 @@
 package com.my9z.study.beans.factory.config;
 
+import com.my9z.study.beans.PropertyValues;
+
 /**
  * @description: 定义Bean实例对象
  * @author: wczy9
- * @createTime: 2022-11-16  19:20
+ * @createTime: 2022-11-16  19:20 diagrams
  */
 public class BeanDefinition {
 
@@ -12,8 +14,19 @@ public class BeanDefinition {
      */
     private Class<?> beanClass;
 
+    /**
+     * 定义bean对象中的属性和依赖对象
+     */
+    private final PropertyValues propertyValues;
+
     public BeanDefinition(Class<?> beanClass) {
         this.beanClass = beanClass;
+        this.propertyValues = new PropertyValues();
+    }
+
+    public BeanDefinition(Class<?> beanClass, PropertyValues propertyValues) {
+        this.beanClass = beanClass;
+        this.propertyValues = propertyValues != null ? propertyValues : new PropertyValues();
     }
 
     public Class<?> getBeanClass() {

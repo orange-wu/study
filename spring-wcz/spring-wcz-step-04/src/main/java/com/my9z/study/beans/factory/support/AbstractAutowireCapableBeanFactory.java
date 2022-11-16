@@ -24,6 +24,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         try {
             //调用newInstance方法实例化bean
             bean = createBeanInstance(beanDefinition, beanName, args);
+            //填充bean属性
+            applyPropertyValues(beanName, bean, beanDefinition);
         } catch (Exception e) {
             throw new BeansException("Instantiation of " + beanName + " bean failed", e);
         }
@@ -70,6 +72,17 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         }
         //调用实例化具体策略创建bean
         return getInstantiationStrategy().instantiate(beanDefinition, beanName, constructorToUse, args);
+    }
+
+    /**
+     * 注入bean对象的依赖属性和对象
+     *
+     * @param beanName       需要实例化的bean名称
+     * @param bean           实例化后的bean
+     * @param beanDefinition beanDefinition对象，包含PropertyValues信息
+     */
+    private void applyPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
+        // TODO: 2022/11/17 bean对象实例化过程中的属性注入
     }
 
     public InstantiationStrategy getInstantiationStrategy() {
