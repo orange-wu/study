@@ -48,11 +48,24 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         Constructor<?>[] declaredConstructors = beanClass.getDeclaredConstructors();
         //声明与入参信息匹配的构造函数对象
         Constructor<?> constructorToUse = null;
+        //遍历查找args对应的构造函数
+        findConstructor:
         for (Constructor<?> constructor : declaredConstructors) {
-            //通过入参的个数来匹配构造函数？？？
-            if (null != args && constructor.getParameterTypes().length == args.length) {
-                constructorToUse = constructor;
-                break;
+            Class<?>[] parameterTypes = constructor.getParameterTypes();
+            //先通过入参的个数来匹配构造函数
+            if (null != args && parameterTypes.length == args.length) {
+                //再通过构造函数入参类型比对来确定构造函数
+                for (int i = 0; i < args.length; i++) {
+                    //如果有一个入参类型和arg类型不对就跳出
+                    if (!args[i].getClass().getName().equals(parameterTypes[i].getName())) {
+                        break;
+                    }
+                    //比到最后一个还没跳出则认为当前构造函数是可以被选择的，结束找构造函数的流程
+                    if (i == args.length - 1) {
+                        constructorToUse = constructor;
+                        break findConstructor;
+                    }
+                }
             }
         }
         //调用实例化具体策略创建bean
