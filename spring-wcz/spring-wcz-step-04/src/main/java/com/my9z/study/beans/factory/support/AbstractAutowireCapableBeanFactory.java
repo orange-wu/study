@@ -99,9 +99,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                 value = getBean(((BeanReference) value).getBeanName());
             }
             String name = propertyValue.getName();
+            Class<?> beanClass = beanDefinition.getBeanClass();
             try {
                 //对应的属性赋值
-                setFieldValue(bean, name, value);
+                setFieldValue(bean, name, value, beanClass);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 throw new BeansException("Error setting property values:" + beanName + "fieldName:" + name + "fieldValue:" + value, e);
             }
@@ -114,14 +115,14 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      * @param bean       实例化的bean对象
      * @param fieldName  字段名
      * @param fieldValue 字段值
+     * @param beanClass  bean的Class对象
+     *                   （为什么不用实例化的bean获取Class对象？因为cglib实例化的bean对象获取的Class对象获取对应的属性获取不到）
      * @throws NoSuchFieldException   没有找到当前属性时报错
      * @throws IllegalAccessException 设置属性出错时抛出异常
      */
-    private void setFieldValue(Object bean, String fieldName, Object fieldValue) throws NoSuchFieldException, IllegalAccessException {
-        //获取class对象
-        Class<?> clazz = bean.getClass();
+    private void setFieldValue(Object bean, String fieldName, Object fieldValue, Class<?> beanClass) throws NoSuchFieldException, IllegalAccessException {
         //根据fieldName获取field对象
-        Field field = clazz.getDeclaredField(fieldName);
+        Field field = beanClass.getDeclaredField(fieldName);
         //设置访问权限
         if (!field.isAccessible())
             field.setAccessible(true);
