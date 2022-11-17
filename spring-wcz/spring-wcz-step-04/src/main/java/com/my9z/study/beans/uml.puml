@@ -1,0 +1,85 @@
+@startuml
+top to bottom direction
+skinparam linetype ortho
+
+class AbstractAutowireCapableBeanFactory {
+  - instantiationStrategy: InstantiationStrategy
+  + getInstantiationStrategy(): InstantiationStrategy
+  + setInstantiationStrategy(InstantiationStrategy): void
+  # createBeanInstance(BeanDefinition, String, Object[]): Object
+  # createBean(String, BeanDefinition, Object[]): Object
+  - applyPropertyValues(String, Object, BeanDefinition): void
+  - setFieldValue(Object, String, Object, Class<?>): void
+}
+class AbstractBeanFactory {
+  + getBean(String, Object[]): Object
+  + getBean(String): Object
+  # getBeanDefinition(String): BeanDefinition
+  # createBean(String, BeanDefinition, Object[]): Object
+  # doGetBean(String, Object[]): Object
+}
+class BeanDefinition {
+  - propertyValues: PropertyValues
+  - beanClass: Class<?>
+  + getBeanClass(): Class<?>
+  + setPropertyValues(PropertyValues): void
+  + setBeanClass(Class<?>): void
+  + getPropertyValues(): PropertyValues
+}
+interface BeanDefinitionRegistry << interface >> {
+  + registerBeanDefinition(String, BeanDefinition): void
+}
+interface BeanFactory << interface >> {
+  + getBean(String): Object
+  + getBean(String, Object[]): Object
+}
+class BeanReference {
+  - beanName: String
+  + getBeanName(): String
+}
+class CglibSubclassingInstantiationStrategy {
+  + instantiate(BeanDefinition, String, Constructor<?>, Object[]): Object
+}
+class DefaultListableBeanFactory {
+  - beanDefinitionMap: Map<String, BeanDefinition>
+  # getBeanDefinition(String): BeanDefinition
+  + registerBeanDefinition(String, BeanDefinition): void
+}
+class DefaultSingletonBeanRegistry {
+  - singletonObjects: Map<String, Object>
+  + getSingleton(String): Object
+  + registerSingleton(String, Object): void
+}
+interface InstantiationStrategy << interface >> {
+  + instantiate(BeanDefinition, String, Constructor<?>, Object[]): Object
+}
+class PropertyValue {
+  - name: String
+  - value: Object
+  + getValue(): Object
+  + getName(): String
+}
+class PropertyValues {
+  - propertyValueList: List<PropertyValue>
+  + getPropertyValue(String): PropertyValue
+  + addPropertyValue(PropertyValue): void
+  + getPropertyValues(): PropertyValue[]
+}
+class SimpleInstantiationStrategy {
+  + instantiate(BeanDefinition, String, Constructor<?>, Object[]): Object
+}
+interface SingletonBeanRegistry << interface >> {
+  + getSingleton(String): Object
+  + registerSingleton(String, Object): void
+}
+
+AbstractAutowireCapableBeanFactory     -[#000082,plain]-^  AbstractBeanFactory
+AbstractBeanFactory                    -[#008200,dashed]-^  BeanFactory
+AbstractBeanFactory                    -[#000082,plain]-^  DefaultSingletonBeanRegistry
+CglibSubclassingInstantiationStrategy  -[#008200,dashed]-^  InstantiationStrategy
+DefaultListableBeanFactory             -[#000082,plain]-^  AbstractAutowireCapableBeanFactory
+AbstractAutowireCapableBeanFactory   -[#008200,dashed]..> InstantiationStrategy
+DefaultListableBeanFactory             -[#008200,dashed]-^  BeanDefinitionRegistry
+DefaultSingletonBeanRegistry           -[#008200,dashed]-^  SingletonBeanRegistry
+SimpleInstantiationStrategy            -[#008200,dashed]-^  InstantiationStrategy
+@enduml
