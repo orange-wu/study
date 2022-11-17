@@ -5,7 +5,7 @@ import com.my9z.study.beans.PropertyValues;
 /**
  * @description: 定义Bean实例对象
  * @author: wczy9
- * @createTime: 2022-11-16  19:20 diagrams
+ * @createTime: 2022-11-16  19:20
  */
 public class BeanDefinition {
 
@@ -17,7 +17,7 @@ public class BeanDefinition {
     /**
      * 定义bean对象中的属性和依赖对象
      */
-    private final PropertyValues propertyValues;
+    private PropertyValues propertyValues;
 
     public BeanDefinition(Class<?> beanClass) {
         this.beanClass = beanClass;
@@ -36,4 +36,13 @@ public class BeanDefinition {
     public void setBeanClass(Class<?> beanClass) {
         this.beanClass = beanClass;
     }
+
+    public PropertyValues getPropertyValues() {
+        return propertyValues;
+    }
+
+    public void setPropertyValues(PropertyValues propertyValues) {
+        this.propertyValues = propertyValues;
+    }
+
 }

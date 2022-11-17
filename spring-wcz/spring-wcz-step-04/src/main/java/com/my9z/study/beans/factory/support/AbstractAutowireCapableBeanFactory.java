@@ -1,9 +1,13 @@
 package com.my9z.study.beans.factory.support;
 
 import com.my9z.study.beans.BeansException;
+import com.my9z.study.beans.PropertyValue;
+import com.my9z.study.beans.PropertyValues;
 import com.my9z.study.beans.factory.config.BeanDefinition;
+import com.my9z.study.beans.factory.config.BeanReference;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 
 /**
  * @description: 实现默认bean创建的抽象bean工厂基类
@@ -59,7 +63,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                 //再通过构造函数入参类型比对来确定构造函数
                 for (int i = 0; i < args.length; i++) {
                     //如果有一个入参类型和arg类型不对就跳出
-                    if (!args[i].getClass().getName().equals(parameterTypes[i].getName())) {
+                    if (!args[i].getClass().isAssignableFrom(parameterTypes[i])) {
                         break;
                     }
                     //比到最后一个还没跳出则认为当前构造函数是可以被选择的，结束找构造函数的流程
@@ -82,7 +86,50 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      * @param beanDefinition beanDefinition对象，包含PropertyValues信息
      */
     private void applyPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
-        // TODO: 2022/11/17 bean对象实例化过程中的属性注入
+        //获取bean对象定义的属性信息
+        PropertyValues propertyValues = beanDefinition.getPropertyValues();
+        if (propertyValues == null || propertyValues.getPropertyValues() == null
+                || propertyValues.getPropertyValues().length == 0)
+            return;
+        //遍历bean对象依赖的属性信息
+        for (PropertyValue propertyValue : propertyValues.getPropertyValues()) {
+            Object value = propertyValue.getValue();
+            //如果是引用对象则从容器中获取（相当于递归了，所以会有循环依赖）
+            if (value instanceof BeanReference) {
+                value = getBean(((BeanReference) value).getBeanName());
+            }
+            String name = propertyValue.getName();
+            try {
+                //对应的属性赋值
+                setFieldValue(bean, name, value);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new BeansException("Error setting property values:" + beanName + "fieldName:" + name + "fieldValue:" + value, e);
+            }
+        }
+    }
+
+    /**
+     * 给bean对象的某个属性赋值
+     *
+     * @param bean       实例化的bean对象
+     * @param fieldName  字段名
+     * @param fieldValue 字段值
+     * @throws NoSuchFieldException   没有找到当前属性时报错
+     * @throws IllegalAccessException 设置属性出错时抛出异常
+     */
+    private void setFieldValue(Object bean, String fieldName, Object fieldValue) throws NoSuchFieldException, IllegalAccessException {
+        //获取class对象
+        Class<?> clazz = bean.getClass();
+        //根据fieldName获取field对象
+        Field field = clazz.getDeclaredField(fieldName);
+        //设置访问权限
+        if (!field.isAccessible())
+            field.setAccessible(true);
+        //获取field的类型
+        Class<?> fieldType = field.getType();
+        //field类型和fieldValue类型相同时进行赋值
+        if (fieldType.isAssignableFrom(fieldValue.getClass()))
+            field.set(bean, fieldValue);
     }
 
     public InstantiationStrategy getInstantiationStrategy() {
