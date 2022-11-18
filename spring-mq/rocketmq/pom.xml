@@ -12,8 +12,8 @@
     <artifactId>rocketmq</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>product</module>
-        <module>consumer</module>
+        <module>springboot-product</module>
+        <module>springboot-consumer</module>
     </modules>
 
     <properties>
