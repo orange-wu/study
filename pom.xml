@@ -17,6 +17,7 @@
     <modules>
         <module>spring-es</module>
         <module>spring-wcz</module>
+        <module>spring-mq</module>
     </modules>
 
     <dependencies>

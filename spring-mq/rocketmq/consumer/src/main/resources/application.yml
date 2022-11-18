@@ -1,0 +1,10 @@
+server:
+  port: 8082
+
+rocketmq:
+  name-server: 43.139.118.53:9876
+
+logging:
+  level:
+    root: info
+    com.my9z.study: debug
