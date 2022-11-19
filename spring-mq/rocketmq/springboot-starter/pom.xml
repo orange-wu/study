@@ -12,7 +12,7 @@
     <artifactId>springboot-starter</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>product</module>
+        <module>producer</module>
         <module>consumer</module>
     </modules>
 
