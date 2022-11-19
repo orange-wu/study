@@ -1,4 +1,4 @@
-package study;
+package com.my9z.study;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

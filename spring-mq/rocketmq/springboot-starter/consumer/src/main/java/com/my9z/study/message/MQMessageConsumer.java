@@ -1,11 +1,12 @@
-package study.message;
+package com.my9z.study.message;
 
 import cn.hutool.json.JSONUtil;
+import com.my9z.study.pojo.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.stereotype.Component;
-import study.pojo.User;
+
 
 /**
  * @description: 消息消费者
