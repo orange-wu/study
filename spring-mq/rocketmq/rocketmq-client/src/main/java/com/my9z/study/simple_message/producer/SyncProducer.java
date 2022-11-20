@@ -1,4 +1,4 @@
-package com.my9z.study.producer;
+package com.my9z.study.simple_message.producer;
 
 import cn.hutool.json.JSONUtil;
 import org.apache.rocketmq.client.exception.MQBrokerException;

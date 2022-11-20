@@ -1,4 +1,4 @@
-package com.my9z.study.consumer;
+package com.my9z.study.simple_message.consumer;
 
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
