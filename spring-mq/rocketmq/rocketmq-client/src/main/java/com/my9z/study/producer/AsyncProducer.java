@@ -19,7 +19,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class AsyncProducer {
 
-    public static void main(String[] args) throws MQClientException, UnsupportedEncodingException, RemotingException, InterruptedException {
+    public static void main(String[] args) throws MQClientException, UnsupportedEncodingException, RemotingException,
+            InterruptedException {
         //实例化消息生产者
         DefaultMQProducer producer = new DefaultMQProducer("async-producer");
         //设置NameServer地址
