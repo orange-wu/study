@@ -1,5 +1,6 @@
 package com.my9z.study.batch_message.producer;
 
+import com.my9z.study.batch_message.MessageSplitter;
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
@@ -30,8 +31,12 @@ public class BatchProducer {
         messages.add(new Message(topic, "TagA", "OrderID001", "Hello world 0".getBytes()));
         messages.add(new Message(topic, "TagA", "OrderID002", "Hello world 1".getBytes()));
         messages.add(new Message(topic, "TagA", "OrderID003", "Hello world 2".getBytes()));
-        //发送批量消息
-        producer.send(messages);
+        MessageSplitter messageSplitter = new MessageSplitter(messages);
+        //对消息进行分割，防止超出最大限额
+        while (messageSplitter.hasNext()){
+            List<Message> messageList = messageSplitter.next();
+            producer.send(messageList);
+        }
         //关闭生产者
         producer.shutdown();
     }
