@@ -16,16 +16,20 @@ public class ApiTest {
 
     @Test
     public void testBeanFactory(){
+        //初始化BeanFactory接口
         DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+        //注册userDao对象
         beanFactory.registerBeanDefinition("userDao",new BeanDefinition(UserDao.class));
+        //userService对象设置属性
         PropertyValues propertyValues = new PropertyValues();
         PropertyValue uId = new PropertyValue("uId", "10002");
         PropertyValue userDao = new PropertyValue("userDao", new BeanReference("userDao"));
         propertyValues.addPropertyValue(uId);
         propertyValues.addPropertyValue(userDao);
+        //注册userService对象
         BeanDefinition userServiceDefinition = new BeanDefinition(UserService.class, propertyValues);
         beanFactory.registerBeanDefinition("userService",userServiceDefinition);
-
+        //获取userService对象
         UserService userService = (UserService) beanFactory.getBean("userService");
         userService.queryUserInfo();
 
