@@ -17,6 +17,7 @@
         <module>spring-wcz-step-02</module>
         <module>spring-wcz-step-03</module>
         <module>spring-wcz-step-04</module>
+        <module>spring-wcz-step-05</module>
     </modules>
     <artifactId>spring-wcz</artifactId>
 
