@@ -1,0 +1,136 @@
+@startuml
+top to bottom direction
+skinparam linetype ortho
+
+class AbstractAutowireCapableBeanFactory {
+  - instantiationStrategy: InstantiationStrategy
+  + getInstantiationStrategy(): InstantiationStrategy
+  - applyPropertyValues(String, Object, BeanDefinition): void
+  - setFieldValue(Object, String, Object, Class<?>): void
+  + setInstantiationStrategy(InstantiationStrategy): void
+  # createBean(String, BeanDefinition, Object[]): Object
+  # createBeanInstance(BeanDefinition, String, Object[]): Object
+}
+class AbstractBeanDefinitionReader {
+  - resourceLoader: ResourceLoader
+  - registry: BeanDefinitionRegistry
+  + getResourceLoader(): ResourceLoader
+  + getRegistry(): BeanDefinitionRegistry
+}
+class AbstractBeanFactory {
+  # getBeanDefinition(String): BeanDefinition
+  + getBean(String, Object[]): Object
+  + getBean(String): Object
+  # doGetBean(String, Object[]): Object
+  # createBean(String, BeanDefinition, Object[]): Object
+}
+class BeanDefinition {
+  - propertyValues: PropertyValues
+  - beanClass: Class<?>
+  + setBeanClass(Class<?>): void
+  + setPropertyValues(PropertyValues): void
+  + getPropertyValues(): PropertyValues
+  + getBeanClass(): Class<?>
+}
+class PropertyValue {
+  - name: String
+  - value: Object
+  + getValue(): Object
+  + getName(): String
+}
+class PropertyValues {
+  - propertyValueList: List<PropertyValue>
+  + getPropertyValue(String): PropertyValue
+  + addPropertyValue(PropertyValue): void
+  + getPropertyValues(): PropertyValue[]
+}
+interface BeanDefinitionReader << interface >> {
+  + loadBeanDefinitions(Resource): void
+  + loadBeanDefinitions(Resource[]): void
+  + getRegistry(): BeanDefinitionRegistry
+  + getResourceLoader(): ResourceLoader
+  + loadBeanDefinitions(String): void
+}
+interface BeanDefinitionRegistry << interface >> {
+  + containsBeanDefinition(String): boolean
+  + registerBeanDefinition(String, BeanDefinition): void
+}
+class BeanReference {
+  - beanName: String
+  + getBeanName(): String
+}
+class CglibSubclassingInstantiationStrategy {
+  + instantiate(BeanDefinition, String, Constructor<?>, Object[]): Object
+}
+class DefaultListableBeanFactory {
+  - beanDefinitionMap: Map<String, BeanDefinition>
+  + registerBeanDefinition(String, BeanDefinition): void
+  + containsBeanDefinition(String): boolean
+  # getBeanDefinition(String): BeanDefinition
+}
+class DefaultSingletonBeanRegistry {
+  - singletonObjects: Map<String, Object>
+  + registerSingleton(String, Object): void
+  + getSingleton(String): Object
+}
+interface InstantiationStrategy << interface >> {
+  + instantiate(BeanDefinition, String, Constructor<?>, Object[]): Object
+}
+class SimpleInstantiationStrategy {
+  + instantiate(BeanDefinition, String, Constructor<?>, Object[]): Object
+}
+interface SingletonBeanRegistry << interface >> {
+  + getSingleton(String): Object
+  + registerSingleton(String, Object): void
+}
+class XmlBeanDefinitionReader {
+  + loadBeanDefinitions(Resource): void
+  + loadBeanDefinitions(String): void
+  # doLoadBeanDefinitions(InputStream): void
+  + loadBeanDefinitions(Resource[]): void
+}
+class ClassPathResource {
+  - path: String
+  - classLoader: ClassLoader
+  + getInputStream(): InputStream
+}
+class DefaultResourceLoader {
+  + getResource(String): Resource
+}
+class FileSystemResource {
+  - path: String
+  - file: File
+  + getPath(): String
+  + getInputStream(): InputStream
+}
+interface Resource << interface >> {
+  + getInputStream(): InputStream
+}
+interface ResourceLoader << interface >> {
+  + CLASSPATH_URL_PREFIX: String
+  + getResource(String): Resource
+}
+class UrlResource {
+  - url: URL
+  + getInputStream(): InputStream
+}
+
+AbstractAutowireCapableBeanFactory     -[#000082,plain]-^  AbstractBeanFactory
+AbstractBeanDefinitionReader           -[#008200,dashed]-^  BeanDefinitionReader
+AbstractBeanDefinitionReader   -[#008200,dashed]..> BeanDefinitionRegistry
+AbstractBeanDefinitionReader   -[#008200,dashed]..> ResourceLoader
+AbstractBeanFactory                    -[#000082,plain]-^  DefaultSingletonBeanRegistry
+CglibSubclassingInstantiationStrategy  -[#008200,dashed]-^  InstantiationStrategy
+DefaultListableBeanFactory             -[#000082,plain]-^  AbstractAutowireCapableBeanFactory
+AbstractAutowireCapableBeanFactory   -[#008200,dashed]..> InstantiationStrategy
+PropertyValues   -[#008200,dashed]..> PropertyValue
+BeanDefinition   -[#008200,dashed]..> PropertyValues
+DefaultListableBeanFactory             -[#008200,dashed]-^  BeanDefinitionRegistry
+DefaultSingletonBeanRegistry           -[#008200,dashed]-^  SingletonBeanRegistry
+SimpleInstantiationStrategy            -[#008200,dashed]-^  InstantiationStrategy
+XmlBeanDefinitionReader                -[#000082,plain]-^  AbstractBeanDefinitionReader
+ClassPathResource      -[#008200,dashed]-^  Resource
+DefaultResourceLoader  -[#008200,dashed]-^  ResourceLoader
+FileSystemResource     -[#008200,dashed]-^  Resource
+UrlResource            -[#008200,dashed]-^  Resource
+@enduml
