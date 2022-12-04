@@ -1,6 +1,9 @@
 package com.my9z.study;
 
 import cn.hutool.core.io.IoUtil;
+import com.my9z.study.bean.UserService;
+import com.my9z.study.beans.factory.support.DefaultListableBeanFactory;
+import com.my9z.study.beans.factory.xml.XmlBeanDefinitionReader;
 import com.my9z.study.core.io.DefaultResourceLoader;
 import com.my9z.study.core.io.Resource;
 import org.junit.Before;
@@ -39,4 +42,22 @@ public class ApiTest {
         System.out.println(content);
     }
 
+    @Test
+    public void testUrl() throws IOException {
+        Resource resource = resourceLoader.getResource("https://github.com/orange-wu/study/blob/master/spring-wcz/spring-wcz-step-05/src/test/resources/important.properties");
+        InputStream inputStream = resource.getInputStream();
+        String content = IoUtil.readUtf8(inputStream);
+        System.out.println(content);
+    }
+
+    @Test
+    public void testXml(){
+        DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
+        reader.loadBeanDefinitions("classpath:spring.xml");
+
+        UserService userService = (UserService) beanFactory.getBean("userService");
+        userService.queryUserInfo();
+    }
 }

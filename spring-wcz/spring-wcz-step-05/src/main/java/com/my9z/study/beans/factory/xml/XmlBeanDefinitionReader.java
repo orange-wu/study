@@ -88,7 +88,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
                 //解析字段引用
                 String attrRef = property.getAttribute("ref");
                 //2.2、确定字段值
-                Object value = StrUtil.isNotEmpty(attrRef) ? new BeanReference(attrRef) : attrName;
+                Object value = StrUtil.isNotEmpty(attrRef) ? new BeanReference(attrRef) : attrValue;
                 //2.3、设置bean属性
                 beanDefinition.getPropertyValues().addPropertyValue(new PropertyValue(attrName,value));
             }

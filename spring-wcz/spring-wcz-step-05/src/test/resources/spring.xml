@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <bean id="userDao" class="com.my9z.study.bean.UserDao"/>
+
+    <bean id = "userService" class ="com.my9z.study.bean.UserService">
+        <property name="uId" value="10001"/>
+        <property name="userDao" ref="userDao"/>
+    </bean>
+</beans>
