@@ -3,22 +3,25 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>spring-es</artifactId>
+        <artifactId>rocketmq</artifactId>
         <groupId>org.wczy</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+    <description>封装rocketmq，事务生产者公用并统一消费端接口</description>
     <modelVersion>4.0.0</modelVersion>
-    <description>
-        es学习 RestHighLevelClient的相关配置和使用（springboot版本: 2.3.5.RELEASE ES版本:7.12.0 elasticsearch-rest-high-level-client版本:7.12.0）
-    </description>
-    <artifactId>rest-high-level-client</artifactId>
+
+    <artifactId>wcz-rocketmq</artifactId>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
 
     <dependencies>
-        <!-- Elasticsearch -->
         <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>elasticsearch-rest-high-level-client</artifactId>
-            <version>7.12.0</version>
+            <groupId>org.apache.rocketmq</groupId>
+            <artifactId>rocketmq-client</artifactId>
+            <version>4.8.0</version>
         </dependency>
         <!-- spring boot starter  -->
         <dependency>
@@ -31,6 +34,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <version>2.3.5.RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
