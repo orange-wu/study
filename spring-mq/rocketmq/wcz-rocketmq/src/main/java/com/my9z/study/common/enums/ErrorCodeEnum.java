@@ -1,6 +1,6 @@
-package com.my9z.study.enums;
+package com.my9z.study.common.enums;
 
-import com.my9z.study.exception.WczRocketMQException;
+import com.my9z.study.common.exception.WczRocketMQException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -15,6 +15,7 @@ public enum ErrorCodeEnum {
 
     NAME_SERVER_OR_GROUP_IS_EMPTY("0001", "nameServerAddress or producerGroup is empty"),
     GROUP_IS_EMPTY("0002", "producerGroup is empty"),
+    PRODUCER_INIT_ERROR("0003", "producer start error"),
     ;
 
     private final String code;

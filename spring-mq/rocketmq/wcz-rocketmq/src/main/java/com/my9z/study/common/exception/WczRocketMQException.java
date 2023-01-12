@@ -1,4 +1,4 @@
-package com.my9z.study.exception;
+package com.my9z.study.common.exception;
 
 import lombok.NoArgsConstructor;
 
