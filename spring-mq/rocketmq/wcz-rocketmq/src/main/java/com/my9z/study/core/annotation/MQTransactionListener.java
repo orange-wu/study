@@ -1,7 +1,5 @@
 package com.my9z.study.core.annotation;
 
-import com.my9z.study.common.enums.MQGroupEnum;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

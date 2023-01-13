@@ -1,8 +1,8 @@
 package com.my9z.study.core;
 
 import cn.hutool.core.collection.CollUtil;
+import com.my9z.study.common.constant.RocketMqConstant;
 import com.my9z.study.common.enums.ErrorCodeEnum;
-import com.my9z.study.common.enums.MQGroupEnum;
 import com.my9z.study.core.annotation.MQTransactionListener;
 import com.my9z.study.core.base.AbstractMQTransactionListener;
 import com.my9z.study.core.factory.MQProducerFactory;
@@ -15,6 +15,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.Map;
  * @createTime: 2023-01-12  09:32
  */
 @Slf4j
+@Configuration
 public class MQProducerInit implements InitializingBean, ApplicationContextAware {
 
     @Value("${rocketmq.name-server}")
@@ -45,9 +47,10 @@ public class MQProducerInit implements InitializingBean, ApplicationContextAware
         MQProducerFactory mqProducerFactory = MQProducerFactory.getInstance();
         //普通消息生产者
         DefaultMQProducer normalMQProducer = mqProducerFactory.createNormalMQProducer(nameSerAddress,
-                MQGroupEnum.NORMAL_MESSAGE_PRODUCER_GROUP.getCode(), timeOut);
+                RocketMqConstant.NORMAL_MESSAGE_PRODUCER_GROUP, timeOut);
         try {
             normalMQProducer.start();
+            log.info("wcz rocketmq normalMQProducer start success");
         } catch (MQClientException e) {
             log.error("MQProducerInit normalMQProducer start error.nameSerAddress:{}", nameSerAddress, e);
             Runtime.getRuntime().addShutdownHook(new Thread(() -> MQProducerFactory.getInstance().destroy()));
@@ -67,6 +70,7 @@ public class MQProducerInit implements InitializingBean, ApplicationContextAware
                         mqProducerFactory.createTransactionMQProducer(nameSerAddress, transactionListenerAnno.producerGroup(), listener);
                 try {
                     transactionMQProducer.start();
+                    log.info("wcz rocketmq producerGroup:{} transactionMQProducer start success", transactionListenerAnno.producerGroup());
                 } catch (MQClientException e) {
                     log.error("MQProducerInit normalMQProducer start error.nameSerAddress:{}", nameSerAddress, e);
                     Runtime.getRuntime().addShutdownHook(new Thread(() -> MQProducerFactory.getInstance().destroy()));
