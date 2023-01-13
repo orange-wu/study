@@ -16,6 +16,7 @@ public enum ErrorCodeEnum {
     NAME_SERVER_OR_GROUP_IS_EMPTY("0001", "nameServerAddress or producerGroup is empty"),
     GROUP_IS_EMPTY("0002", "producerGroup is empty"),
     PRODUCER_INIT_ERROR("0003", "producer start error"),
+    BUILD_MESSAGE_ERROR("0004", "build message error,topic or msgBody is null"),
     ;
 
     private final String code;
