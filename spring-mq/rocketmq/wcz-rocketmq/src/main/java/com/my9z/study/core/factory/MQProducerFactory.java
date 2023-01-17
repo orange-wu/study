@@ -81,7 +81,7 @@ public class MQProducerFactory {
 
 
     /**
-     * 创建一个新的事务消息producer并返回，producerGroup为keu，新建的producer为value存入默认生产者本地缓存。
+     * 创建一个新的事务消息producer并返回，producerGroup为key，新建的producer为value存入默认生产者本地缓存。
      * 如果producerGroup键值已存在producer,则直接替换
      *
      * @param nameServerAddress rocketMQ nameServer 地址
@@ -93,15 +93,11 @@ public class MQProducerFactory {
             log.error("MQProducerFactory createTransactionMQProducer nameServerAddress or producerGroup is empty");
             throw ErrorCodeEnum.NAME_SERVER_OR_GROUP_IS_EMPTY.buildException();
         }
-        TransactionMQProducer transactionProducer = transactionProducers.get(producerGroup);
-        if (transactionProducer == null) {
-            TransactionMQProducer producer = new TransactionMQProducer(producerGroup);
-            producer.setNamesrvAddr(nameServerAddress);
-            producer.setTransactionListener(listener);
-            transactionProducers.put(producerGroup, producer);
-            return producer;
-        }
-        return transactionProducer;
+        TransactionMQProducer producer = new TransactionMQProducer(producerGroup);
+        producer.setNamesrvAddr(nameServerAddress);
+        producer.setTransactionListener(listener);
+        transactionProducers.put(producerGroup, producer);
+        return producer;
     }
 
     /**
@@ -113,7 +109,7 @@ public class MQProducerFactory {
     public TransactionMQProducer getTransactionMQProducer(String producerGroup) {
         if (StrUtil.isEmpty(producerGroup)) {
             log.error("MQProducerFactory getMQProducer producerGroup is empty");
-            throw ErrorCodeEnum.GROUP_IS_EMPTY.buildException();
+            throw ErrorCodeEnum.PRODUCER_GROUP_IS_EMPTY.buildException();
         }
         return transactionProducers.get(producerGroup);
     }
@@ -126,7 +122,7 @@ public class MQProducerFactory {
     public void stopTransactionMQProducer(String producerGroup) {
         if (StrUtil.isEmpty(producerGroup)) {
             log.error("MQProducerFactory stopMQProducer producerGroup is empty");
-            throw ErrorCodeEnum.GROUP_IS_EMPTY.buildException();
+            throw ErrorCodeEnum.PRODUCER_GROUP_IS_EMPTY.buildException();
         }
         TransactionMQProducer transactionProducer = transactionProducers.get(producerGroup);
         if (transactionProducer != null) {
@@ -142,7 +138,7 @@ public class MQProducerFactory {
     public void removeTransactionMQProducer(String producerGroup) {
         if (StrUtil.isEmpty(producerGroup)) {
             log.error("MQProducerFactory removeMQProducer producerGroup is empty");
-            throw ErrorCodeEnum.GROUP_IS_EMPTY.buildException();
+            throw ErrorCodeEnum.PRODUCER_GROUP_IS_EMPTY.buildException();
         }
         TransactionMQProducer transactionProducer = transactionProducers.get(producerGroup);
         if (transactionProducer != null) {

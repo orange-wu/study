@@ -45,4 +45,9 @@ public @interface MQConsumer {
      */
     String consumerGroup();
 
+    /**
+     * 是否集群消费
+     */
+    boolean isCluster() default true;
+
 }

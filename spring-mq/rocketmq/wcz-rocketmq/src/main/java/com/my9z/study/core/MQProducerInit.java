@@ -72,7 +72,7 @@ public class MQProducerInit implements InitializingBean, ApplicationContextAware
                     transactionMQProducer.start();
                     log.info("wcz rocketmq producerGroup:{} transactionMQProducer start success", transactionListenerAnno.producerGroup());
                 } catch (MQClientException e) {
-                    log.error("MQProducerInit normalMQProducer start error.nameSerAddress:{}", nameSerAddress, e);
+                    log.error("MQProducerInit producerGroup:{} transactionMQProducer start error", transactionListenerAnno.producerGroup(), e);
                     Runtime.getRuntime().addShutdownHook(new Thread(() -> MQProducerFactory.getInstance().destroy()));
                     throw ErrorCodeEnum.PRODUCER_INIT_ERROR.buildException();
                 }
