@@ -1,10 +1,7 @@
 package com.my9z.study;
 
-import cn.hutool.json.JSONUtil;
 import com.my9z.study.core.api.WczMQProducer;
-import com.my9z.study.core.factory.MQProducerFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +18,7 @@ public class MQTest {
 
     @Test
     public void testESConfigProperties() throws Exception {
-        mqProducer.sendSync("TopicSync",null,"hello world","wczy");
+        mqProducer.sendSync("TopicSync",null,"hello consumer","wczy");
     }
 
 
