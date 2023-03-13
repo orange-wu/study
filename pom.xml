@@ -18,6 +18,7 @@
         <module>spring-es</module>
         <module>spring-wcz</module>
         <module>spring-mq</module>
+        <module>multi-thread</module>
     </modules>
 
     <dependencies>
