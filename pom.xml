@@ -19,6 +19,7 @@
         <module>spring-wcz</module>
         <module>spring-mq</module>
         <module>multi-thread</module>
+        <module>design-patterns</module>
     </modules>
 
     <dependencies>
