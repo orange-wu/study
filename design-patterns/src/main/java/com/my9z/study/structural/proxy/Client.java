@@ -1,5 +1,7 @@
 package com.my9z.study.structural.proxy;
 
+import com.my9z.study.structural.proxy.dynamic_proxy.cglib.My9zCglibProxyFactory;
+import com.my9z.study.structural.proxy.dynamic_proxy.cglib.SendServiceMethodInterceptor;
 import com.my9z.study.structural.proxy.dynamic_proxy.jdk.My9zJdkProxyFactory;
 import com.my9z.study.structural.proxy.dynamic_proxy.jdk.SendServiceInvocationHandler;
 import com.my9z.study.structural.proxy.static_proxy.SendServiceProxy;
@@ -18,5 +20,8 @@ public class Client {
         //jdk动态代理
         SendService sendJdkProxy = My9zJdkProxyFactory.getProxy(sendService, new SendServiceInvocationHandler(sendService));
         sendJdkProxy.sendMsg("jdk动态代理");
+        //cglib动态代理
+        SendService sendCglibProxy = My9zCglibProxyFactory.getProxy(sendService, new SendServiceMethodInterceptor());
+        sendCglibProxy.sendMsg("cglib动态代理");
     }
 }
