@@ -1,9 +1,8 @@
 package com.my9z.study.structural.proxy;
 
+import com.my9z.study.structural.proxy.dynamic_proxy.jdk.My9zJdkProxyFactory;
 import com.my9z.study.structural.proxy.dynamic_proxy.jdk.SendServiceInvocationHandler;
 import com.my9z.study.structural.proxy.static_proxy.SendServiceProxy;
-
-import java.lang.reflect.Proxy;
 
 /**
  * @description: 客户端实际使用代理
@@ -17,10 +16,7 @@ public class Client {
         SendServiceProxy sendServiceProxy = new SendServiceProxy(sendService);
         sendServiceProxy.sendMsg("静态代理");
         //jdk动态代理
-        SendService sendProxyInstance = (SendService) Proxy.newProxyInstance(
-                sendService.getClass().getClassLoader(),
-                sendService.getClass().getInterfaces(),
-                new SendServiceInvocationHandler(sendService));
-        sendProxyInstance.sendMsg("jdk动态代理");
+        SendService sendJdkProxy = My9zJdkProxyFactory.getProxy(sendService, new SendServiceInvocationHandler(sendService));
+        sendJdkProxy.sendMsg("jdk动态代理");
     }
 }

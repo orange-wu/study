@@ -29,11 +29,11 @@ public class SendServiceInvocationHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         //执行方法之前
-        System.out.println("before sendMsg " + Arrays.toString(args));
+        System.out.println("before " + method.getName() + Arrays.toString(args));
         //调用实际方法
         Object result = method.invoke(target, args);
         //执行方法之前
-        System.out.println("after sendMsg " + Arrays.toString(args));
+        System.out.println("after " + method.getName() + Arrays.toString(args));
         return result;
     }
 }
