@@ -1,6 +1,6 @@
 package com.my9z.study.structural.proxy.static_proxy;
 
-import java.util.Date;
+import com.my9z.study.structural.proxy.SendService;
 
 /**
  * @description: SendService接口代理类
@@ -18,10 +18,10 @@ public class SendServiceProxy implements SendService {
     @Override
     public void sendMsg(String msg) {
         //执行方法之前
-        System.out.println("before sendMsg " + new Date());
+        System.out.println("before sendMsg " + msg);
         //调用实际方法
         sendService.sendMsg(msg);
         //执行方法之前
-        System.out.println("after sendMsg " + new Date());
+        System.out.println("after sendMsg " + msg);
     }
 }

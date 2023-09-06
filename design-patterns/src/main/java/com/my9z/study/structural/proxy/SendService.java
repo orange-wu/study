@@ -1,4 +1,4 @@
-package com.my9z.study.structural.proxy.static_proxy;
+package com.my9z.study.structural.proxy;
 
 public interface SendService {
 

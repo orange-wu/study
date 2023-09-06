@@ -1,4 +1,4 @@
-package com.my9z.study.structural.proxy.static_proxy;
+package com.my9z.study.structural.proxy;
 
 /**
  * @description: SendService接口实现类
