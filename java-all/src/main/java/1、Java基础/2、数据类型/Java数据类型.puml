@@ -1,0 +1,25 @@
+@startmindmap
+title Java数据类型
+
+* <&flag>数据类型
+** <&globe>基本数据类型
+*** 数值型
+**** 整数类型
+***** byte
+***** short
+***** int
+***** long
+**** 浮点类型
+***** float
+***** double
+*** 字符型
+**** char
+*** 布尔型
+**** boolean
+** <&graph>引用数据类型
+*** 类(Class)
+*** 类(interface)
+*** 数组[]
+
+@endmindmap
+

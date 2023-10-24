@@ -20,6 +20,7 @@
         <module>spring-mq</module>
         <module>multi-thread</module>
         <module>design-patterns</module>
+        <module>java-all</module>
     </modules>
 
     <dependencies>

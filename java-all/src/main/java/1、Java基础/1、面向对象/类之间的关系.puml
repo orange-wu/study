@@ -1,0 +1,23 @@
+@startuml
+!theme sketchy-outline
+title 类之间的所有关系
+
+abstract 车
+class 小汽车
+class 自行车
+class SUV
+class 学生
+class 学生卡
+class 轮胎
+class 发动机
+class 班级
+
+小汽车 ..|> 车 : 实现
+自行车 ..|> 车 : 实现
+SUV --|> 小汽车 : 泛化
+学生 ..> 自行车 : 依赖
+学生 -- 学生卡 : 关联
+轮胎 --* 小汽车 : 组合
+发动机 --* 小汽车 : 组合
+学生 --o 班级 : 聚合
+@enduml
